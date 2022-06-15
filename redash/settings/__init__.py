@@ -67,7 +67,10 @@ INVITATION_TOKEN_MAX_AGE = int(
 SECRET_KEY = os.environ.get("REDASH_COOKIE_SECRET")
 
 if SECRET_KEY is None:
-    raise Exception("You must set the REDASH_COOKIE_SECRET environment variable. Visit http://redash.io/help/open-source/admin-guide/secrets for more information.")
+    raise Exception(
+        "You must set the REDASH_COOKIE_SECRET environment variable. Visit "
+        "http://redash.io/help/open-source/admin-guide/secrets for more information."
+        )
 
 # The secret key to use when encrypting data source options
 DATASOURCE_SECRET_KEY = os.environ.get("REDASH_SECRET_KEY", SECRET_KEY)
@@ -140,7 +143,8 @@ HSTS_INCLUDE_SUBDOMAINS = parse_boolean(
 # for more information. E.g.:
 CONTENT_SECURITY_POLICY = os.environ.get(
     "REDASH_CONTENT_SECURITY_POLICY",
-    "default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-eval'; font-src 'self' data:; img-src 'self' http: https: data: blob:; object-src 'none'; frame-ancestors 'none'; frame-src redash.io;",
+    "default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-eval'; font-src 'self' data:; "
+    "img-src 'self' http: https: data: blob:; object-src 'none'; frame-ancestors 'none'; frame-src redash.io;",
 )
 CONTENT_SECURITY_POLICY_REPORT_URI = os.environ.get(
     "REDASH_CONTENT_SECURITY_POLICY_REPORT_URI", ""
@@ -271,8 +275,8 @@ RQ_WORKER_JOB_LOG_FORMAT = os.environ.get(
     "REDASH_RQ_WORKER_JOB_LOG_FORMAT",
     (
         LOG_PREFIX + "[%(asctime)s][PID:%(process)d][%(levelname)s][%(name)s] "
-        "job.func_name=%(job_func_name)s "
-        "job.id=%(job_id)s %(message)s"
+                     "job.func_name=%(job_func_name)s "
+                     "job.id=%(job_id)s %(message)s"
     ),
 )
 
@@ -350,6 +354,7 @@ default_query_runners = [
     "redash.query_runner.presto",
     "redash.query_runner.databricks",
     "redash.query_runner.hive_ds",
+    "redash.query_runner.spark_ds",
     "redash.query_runner.impala_ds",
     "redash.query_runner.vertica",
     "redash.query_runner.clickhouse",
@@ -458,7 +463,8 @@ QUERY_REFRESH_INTERVALS = list(
         array_from_string(
             os.environ.get(
                 "REDASH_QUERY_REFRESH_INTERVALS",
-                "60, 300, 600, 900, 1800, 3600, 7200, 10800, 14400, 18000, 21600, 25200, 28800, 32400, 36000, 39600, 43200, 86400, 604800, 1209600, 2592000",
+                "60, 300, 600, 900, 1800, 3600, 7200, 10800, 14400, 18000, 21600, 25200, 28800, 32400, 36000, 39600, "
+                "43200, 86400, 604800, 1209600, 2592000",
             )
         ),
     )
@@ -524,7 +530,8 @@ REQUESTS_ALLOW_REDIRECTS = parse_boolean(
 )
 
 # Enforces CSRF token validation on API requests.
-# This is turned off by default to avoid breaking any existing deployments but it is highly recommended to turn this toggle on to prevent CSRF attacks.
+# This is turned off by default to avoid breaking any existing deployments but it is highly recommended to turn this
+# toggle on to prevent CSRF attacks.
 ENFORCE_CSRF = parse_boolean(
     os.environ.get("REDASH_ENFORCE_CSRF", "false")
 )
