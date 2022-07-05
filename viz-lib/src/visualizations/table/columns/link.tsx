@@ -11,6 +11,7 @@ type Props = {
     linkTextTemplate?: string;
     linkTitleTemplate?: string;
     linkOpenInNewTab?: boolean;
+    linkParameterAreGoogleTable?: boolean;
   };
   onChange: (...args: any[]) => any;
 };
@@ -83,8 +84,7 @@ function Editor({ column, onChange }: Props) {
 
 export default function initLinkColumn(column: any) {
   function prepareData(row: any) {
-    row = extend({ "@": row[column.name] }, row);
-
+    row = extend({ "@": row[column.name] }, row);  
     const href = trim(formatSimpleTemplate(column.linkUrlTemplate, row));
     if (href === "") {
       return {};
