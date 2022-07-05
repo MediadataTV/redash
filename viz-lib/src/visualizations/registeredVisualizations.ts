@@ -85,7 +85,6 @@ each(
     choroplethVisualization,
     cohortVisualization,
     counterVisualization,
-    customCounterVisualization,
     detailsVisualization,
     funnelVisualization,
     mapVisualization,
@@ -93,7 +92,6 @@ each(
     sankeyVisualization,
     sunburstVisualization,
     tableVisualization,
-    customTableVisualization,
     wordCloudVisualization,
   ]),
   registerVisualization
