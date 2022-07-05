@@ -6,6 +6,7 @@ import chartVisualization from "./chart";
 import choroplethVisualization from "./choropleth";
 import cohortVisualization from "./cohort";
 import counterVisualization from "./counter";
+import customCounterVisualization from "./custom-counter";
 import detailsVisualization from "./details";
 import funnelVisualization from "./funnel";
 import mapVisualization from "./map";
@@ -13,6 +14,7 @@ import pivotVisualization from "./pivot";
 import sankeyVisualization from "./sankey";
 import sunburstVisualization from "./sunburst";
 import tableVisualization from "./table";
+import customTableVisualization from "./custom-table";
 import wordCloudVisualization from "./word-cloud";
 
 type VisualizationConfig = {
@@ -83,6 +85,7 @@ each(
     choroplethVisualization,
     cohortVisualization,
     counterVisualization,
+    customCounterVisualization,
     detailsVisualization,
     funnelVisualization,
     mapVisualization,
@@ -90,6 +93,7 @@ each(
     sankeyVisualization,
     sunburstVisualization,
     tableVisualization,
+    customTableVisualization,
     wordCloudVisualization,
   ]),
   registerVisualization
