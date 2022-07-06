@@ -84,11 +84,47 @@ export function createNumberFormatter(format: any) {
   return (value: any) => lodash.toString(value);
 }
 
+export function parseToJson(json: any){
+  if(lodash.isString(json)){
+    return JSON.parse(json);
+  }
+  return json;
+}
+
+function jsonFind(json: any, jsonPath: string, jsonMatchValue: any){
+  try {
+    let jsonValue = parseToJson(json);
+    if(lodash.isUndefined(jsonValue)){
+      return json;
+    }    
+    return lodash.find(jsonValue, lodash.matchesProperty(jsonPath, jsonMatchValue));
+  } catch (e) {
+    // ignore `JSON.parse` error and return default value
+  }
+  return json;
+}
+
+function jsonSelect(json: any, jsonPath: string){
+  try {
+    let jsonValue = parseToJson(json);
+    if(lodash.isUndefined(jsonValue)){
+      return json;
+    }    
+    return lodash.get(jsonValue, jsonPath);
+  } catch (e) {
+    // ignore `JSON.parse` error and return default value
+  }
+  return json;
+}
+
+
+
 const customFilters: { [K: string]: Function } = {
   camelCase: lodash.camelCase,
   snakeCase: lodash.snakeCase,
+  jsonSelect,
+  jsonFind,
 };
-
 
 export function formatSimpleTemplate(str: any, data: any) {
   if (!lodash.isString(str)) {
@@ -96,7 +132,7 @@ export function formatSimpleTemplate(str: any, data: any) {
   }
 
   // return str.replace(/{{\s*([^\s]+?)\s*}}/g, (match, props) => {
-  let out = str.replace(/{{\s*(@|\w+)(\s*\|\s*\w+\s*)*\s*}}/g, (match, prop, propFilters) => {
+  let out = str.replace(/{{\s*(@|\w+)((?:\s*\|\s*[\w\:\[\]\.]+\s*)*\s*)\s*}}/g, (match, prop, propFilters) => {
     let filters: Array<string> = [];
     if(propFilters){
       filters = propFilters.split('|').map( (item :string) => item.trim()).filter( (item :string) => item!=='');
@@ -104,8 +140,13 @@ export function formatSimpleTemplate(str: any, data: any) {
     if (hasOwnProperty.call(data, prop) && !lodash.isUndefined(data[prop])) {
       let outData: string = data[prop];
       for(let filterName of filters){
-        let filterCall = customFilters[filterName.trim()];
-        lodash.isFunction(filterCall) && (outData = filterCall(outData));
+        let filterParts = filterName.split(':').map( (item :string) => item.trim()).filter( (item :string) => item!=='');
+        let params = [outData];
+        let filterCall = customFilters[filterParts[0]];
+        if(filterParts.length>1){
+          params = params.concat(filterParts.slice(1));
+        }
+        lodash.isFunction(filterCall) && (outData = filterCall.apply(undefined, params));
       }
       return outData;
     }
