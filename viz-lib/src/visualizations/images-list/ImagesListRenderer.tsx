@@ -2,8 +2,10 @@ import React from "react";
 import { isString, isUndefined, isObject } from "lodash";
 import { RendererPropTypes } from "@/visualizations/prop-types";
 import { visualizationsSettings } from "@/visualizations/visualizationsSettings";
-import { Image } from "antd/lib";
+import Image from "antd/lib/image";
 import { formatSimpleTemplate } from "@/lib/value-format";
+
+import "antd/lib/image/style/index.less";
 import "./images-list.less";
 
 function getImages(data: any, options: any) {
@@ -14,7 +16,6 @@ function getImages(data: any, options: any) {
       if(isUndefined(jsonValue)){
         return undefined;
       }
-
       let value=undefined;
       if(Array.isArray(jsonValue)){
         value = jsonValue.map( item => {
@@ -46,20 +47,22 @@ function getImages(data: any, options: any) {
   return undefined;
 }
 
-export default function ImagesListRenderer({ row, options }: any) {
+export default function ImagesListRenderer({ data, options }: any) {
+  if (!data || !data.rows || data.rows.length === 0) {
+    return null;
+  }
 
-  const data = formatSimpleTemplate(options.imageColumn, row);
-  const images = getImages(data,  options)
+  const rows = data.rows[0][options.imageColumn];
+  const images = getImages(rows,  options);
   return (
     <div className="images-list-viz">
       {images ?
         <Image.PreviewGroup>
           { images.map((entry:any, k:any) => (
-            <Image width={entry.width} src={entry.src} alt={entry.alt} />
+            <Image key={k} width={entry.width} src={entry.src} alt={entry.alt} />
             ))}
         </Image.PreviewGroup>      
-        : 
-        data
+        : data
       }
     </div>
   );
