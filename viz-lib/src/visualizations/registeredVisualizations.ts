@@ -15,6 +15,7 @@ import sunburstVisualization from "./sunburst";
 import tableVisualization from "./table";
 import wordCloudVisualization from "./word-cloud";
 import imagesListVisualization from "./images-list";
+import verticalTableVisualization from "./vertical-table";
 
 type VisualizationConfig = {
   type: string;
@@ -93,6 +94,7 @@ each(
     tableVisualization,
     wordCloudVisualization,
     imagesListVisualization,
+    verticalTableVisualization,
   ]),
   registerVisualization
 );
