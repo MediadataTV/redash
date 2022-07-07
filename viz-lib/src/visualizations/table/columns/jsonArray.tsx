@@ -53,11 +53,13 @@ export default function initJsonArrayColumn(column: any) {
 
     return (
       <div className="json-cell-valid">
+        <ul className="array-element">
         {value ? value.map((val:any, k:any) => (
-                    <div className="array-element" key={k}>
+                    <li key={k}>
                         {val}
-                    </div>
+                    </li>
                 )) : text}
+        </ul>
       </div>
     );
   }
