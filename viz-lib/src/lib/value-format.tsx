@@ -104,20 +104,25 @@ function jsonFind(json: any, jsonPath: string, jsonMatchValue: any){
   return json;
 }
 
-function jsonSelect(json: any, jsonPath: string){
+function jsonSelect(json: any, jsonPath: string, selectFromArray: boolean = false){
   try {
     let jsonValue = parseToJson(json);
     if(lodash.isUndefined(jsonValue)){
       return json;
     }    
-    return lodash.get(jsonValue, jsonPath);
+    let output;
+    if(selectFromArray && lodash.isArray(jsonValue)){
+      output = jsonValue.map(item => lodash.get(item, jsonPath));
+    }
+    else{
+      output = lodash.get(jsonValue, jsonPath);
+    }
+    return output;
   } catch (e) {
     // ignore `JSON.parse` error and return default value
   }
   return json;
 }
-
-
 
 const customFilters: { [K: string]: Function } = {
   camelCase: lodash.camelCase,
@@ -138,7 +143,7 @@ export function formatSimpleTemplate(str: any, data: any) {
       filters = propFilters.split('|').map( (item :string) => item.trim()).filter( (item :string) => item!=='');
     }
     if (hasOwnProperty.call(data, prop) && !lodash.isUndefined(data[prop])) {
-      let outData: string = data[prop];
+      let outData: any = data[prop];
       for(let filterName of filters){
         let filterParts = filterName.split(':').map( (item :string) => item.trim()).filter( (item :string) => item!=='');
         let params = [outData];

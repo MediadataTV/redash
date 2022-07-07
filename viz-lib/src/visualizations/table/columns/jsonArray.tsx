@@ -2,8 +2,8 @@ import _, { isString, isUndefined } from "lodash";
 import React from "react";
 import { useDebouncedCallback } from "use-debounce";
 import { Section, Input, ControlLabel, ContextHelp } from "@/components/visualizations/editor";
-import JsonViewInteractive from "@/components/json-view-interactive/JsonViewInteractive";
 import { visualizationsSettings } from "@/visualizations/visualizationsSettings";
+import { formatSimpleTemplate } from "@/lib/value-format";
 
 type Props = {
   column: {
@@ -28,11 +28,13 @@ export default function initJsonArrayColumn(column: any) {
             if(!_.isObject(item)){
               return item;
             }else{
-              return _.get(item, column.JsonArrayFieldPath);
+              // return _.get(item, column.JsonArrayFieldPath);
+              return formatSimpleTemplate(column.JsonArrayFieldPath, item);
             }
           } );
         }else{
-          value = _.get(jsonValue, column.JsonArrayFieldPath);
+          // value = _.get(jsonValue, column.JsonArrayFieldPath);
+          value = [formatSimpleTemplate(column.JsonArrayFieldPath, jsonValue)];
         }
         return { text, value: value };
       } catch (e) {

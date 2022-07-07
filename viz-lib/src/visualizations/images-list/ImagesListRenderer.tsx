@@ -1,5 +1,5 @@
 import React from "react";
-import { isString, isUndefined, isObject } from "lodash";
+import { isString, isUndefined, isObject, isArray } from "lodash";
 import { RendererPropTypes } from "@/visualizations/prop-types";
 import { visualizationsSettings } from "@/visualizations/visualizationsSettings";
 import Image from "antd/lib/image";
@@ -54,9 +54,12 @@ export default function ImagesListRenderer({ data, options }: any) {
 
   const rows = data.rows[0][options.imageColumn];
   const images = getImages(rows,  options);
+  if (isUndefined(images)) {
+    return <div className="images-list-empty">No images found</div>;
+  }
   return (
     <div className="images-list-viz">
-      {images ?
+      {isArray(images) ?
         <Image.PreviewGroup>
           { images.map((entry:any, k:any) => (
             <Image key={k} width={entry.width} src={entry.src} alt={entry.alt} />
