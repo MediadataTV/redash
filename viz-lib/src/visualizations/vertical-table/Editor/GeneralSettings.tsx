@@ -6,7 +6,7 @@ import { useDebouncedCallback } from "use-debounce";
 
 const ALLOWED_COLUMNS_NUMBER = [1, 2, 3, 4];
 
-export default function GridSettings({ options, onOptionsChange }: any) {
+export default function GeneralSettings({ options, onOptionsChange }: any) {
 
   return (
     // @ts-expect-error ts-migrate(2745) FIXME: This JSX tag's 'children' prop expects type 'never... Remove this comment to see the full error message
@@ -27,4 +27,4 @@ export default function GridSettings({ options, onOptionsChange }: any) {
   );
 }
 
-GridSettings.propTypes = EditorPropTypes;
+GeneralSettings.propTypes = EditorPropTypes;

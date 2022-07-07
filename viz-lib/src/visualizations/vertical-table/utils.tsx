@@ -2,7 +2,7 @@ import { isNil, map, get, filter, each, some, findIndex, toString } from "lodash
 import React from "react";
 import cx from "classnames";
 import Tooltip from "antd/lib/tooltip";
-import ColumnTypes from "./columns";
+import ColumnTypes from "../table//columns";
 
 export function prepareColumns(columns: any) {
   columns = filter(columns, "visible");

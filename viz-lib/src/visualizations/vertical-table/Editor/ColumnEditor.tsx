@@ -4,7 +4,7 @@ import { useDebouncedCallback } from "use-debounce";
 import * as Grid from "antd/lib/grid";
 import { Section, Select, Input, Checkbox, TextAlignmentSelect } from "@/components/visualizations/editor";
 
-import ColumnTypes from "../columns";
+import ColumnTypes from "../../table/columns";
 
 type OwnProps = {
   column: {

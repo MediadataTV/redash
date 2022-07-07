@@ -4,10 +4,9 @@ import Table from "antd/lib/table";
 import Input from "antd/lib/input";
 import InfoCircleFilledIcon from "@ant-design/icons/InfoCircleFilled";
 import Popover from "antd/lib/popover";
-import ColumnTypes from "./columns";
 import { RendererPropTypes } from "@/visualizations/prop-types";
 
-import { prepareColumns, initRows, filterRows } from "./utils";
+import { prepareColumns, initRows } from "./utils";
 
 import "./renderer.less";
 import { Descriptions, Pagination } from "antd";
