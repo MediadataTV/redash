@@ -1,14 +1,17 @@
 import _, { isString, isUndefined } from "lodash";
 import React from "react";
+import { markdown } from "markdown";
 import { useDebouncedCallback } from "use-debounce";
-import { Section, Input, ControlLabel, ContextHelp } from "@/components/visualizations/editor";
+import { Section, Input, ControlLabel, ContextHelp, Switch } from "@/components/visualizations/editor";
 import { visualizationsSettings } from "@/visualizations/visualizationsSettings";
 import { formatSimpleTemplate } from "@/lib/value-format";
+import HtmlContent from "@/components/HtmlContent";
 
 type Props = {
   column: {
     name: string;
-    JsonArrayFieldPath: string;
+    jsonArrayFieldPath: string;
+    enableParseMarkdown: boolean;
   };
   onChange: (...args: any[]) => any;
 };
@@ -28,13 +31,13 @@ export default function initJsonArrayColumn(column: any) {
             if(!_.isObject(item)){
               return item;
             }else{
-              // return _.get(item, column.JsonArrayFieldPath);
-              return formatSimpleTemplate(column.JsonArrayFieldPath, item);
+              // return _.get(item, column.jsonArrayFieldPath);
+              return formatSimpleTemplate(column.jsonArrayFieldPath, item);
             }
-          } );
+          });
         }else{
-          // value = _.get(jsonValue, column.JsonArrayFieldPath);
-          value = [formatSimpleTemplate(column.JsonArrayFieldPath, jsonValue)];
+          // value = _.get(jsonValue, column.jsonArrayFieldPath);
+          value = [formatSimpleTemplate(column.jsonArrayFieldPath, jsonValue)];
         }
         return { text, value: value };
       } catch (e) {
@@ -44,7 +47,16 @@ export default function initJsonArrayColumn(column: any) {
     return { text, value: undefined };
   }
 
+  function processText(text: string){
+    if(column.enableParseMarkdown){
+      return (<HtmlContent>{markdown.toHTML(text)}</HtmlContent>);
+    }
+    return text;
+  }
+
   function JsonArrayColumn({ row }: any) {
+    
+
     // eslint-disable-line react/prop-types
     const { text, value } = prepareData(row);
     if (isUndefined(value)) {
@@ -53,13 +65,15 @@ export default function initJsonArrayColumn(column: any) {
 
     return (
       <div className="json-cell-valid">
-        <ul className="array-element">
-        {value ? value.map((val:any, k:any) => (
-                    <li key={k}>
-                        {val}
-                    </li>
-                )) : text}
-        </ul>
+
+        {value ? 
+          (value.length>1) ?
+          <ul className="array-element">
+            {value.map((val:any, k:any) => (<li key={k}>{processText(val)}</li>))}
+          </ul>
+          :
+          value.map((val:any, k:any) => (<span key={k}>{processText(val)}</span>)) 
+        : text}
       </div>
     );
   }
@@ -79,10 +93,24 @@ function Editor({ column, onChange }: Props) {
       <Input
           label="Field path"
           data-test="Table.ColumnEditor.JsonArray.FieldPath"
-          defaultValue={column.JsonArrayFieldPath}
-          onChange={(event: any) => onChangeDebounced({ JsonArrayFieldPath: event.target.value })}
+          defaultValue={column.jsonArrayFieldPath}
+          onChange={(event: any) => onChangeDebounced({ jsonArrayFieldPath: event.target.value })}
         />
       </Section>
+
+      {/* @ts-expect-error ts-migrate(2745) FIXME: This JSX tag's 'children' prop expects type 'never... Remove this comment to see the full error message */}
+      <Section>
+        {/* @ts-expect-error ts-migrate(2745) FIXME: This JSX tag's 'children' prop expects type 'never... Remove this comment to see the full error message */}
+        <Switch
+          data-test="Table.ColumnEditor.JsonArray.ParseMarkdown"
+          // @ts-expect-error ts-migrate(2322) FIXME: Type 'any' is not assignable to type 'never'.
+          defaultChecked={column.enableParseMarkdown}
+          // @ts-expect-error ts-migrate(2322) FIXME: Type '(enableConsoleLogs: any) => any' is not assi... Remove this comment to see the full error message
+          onChange={(enableParseMarkdown: any) => onChangeDebounced({ enableParseMarkdown })}>
+          Enable Parse markdown in rendered text
+        </Switch>
+      </Section>
+
     </React.Fragment>
   );
 }

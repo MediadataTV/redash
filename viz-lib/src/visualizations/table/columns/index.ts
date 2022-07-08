@@ -3,7 +3,7 @@ import initNumberColumn from "./number";
 import initDateTimeColumn from "./datetime";
 import initBooleanColumn from "./boolean";
 import initLinkColumn from "./link";
-import initImageColumn from "./image";
+import {initImageArrayColumn, initImageColumn} from "./image";
 import initJsonColumn from "./json";
 import initJsonArrayColumn from "./jsonArray";
 
@@ -15,6 +15,7 @@ export default {
   boolean: initBooleanColumn,
   link: initLinkColumn,
   image: initImageColumn,
+  imageArray: initImageArrayColumn,
   json: initJsonColumn,
   jsonArray: initJsonArrayColumn,
 };
