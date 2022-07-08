@@ -1,7 +1,7 @@
 import React from "react";
 import enzyme from "enzyme";
 
-import Column from "./image";
+import {initImageArrayColumn as Column, initImageColumn} from "./image";
 
 function findByTestID(wrapper: any, testId: any) {
   return wrapper.find(`[data-test="${testId}"]`);
@@ -13,6 +13,7 @@ function mount(column: any, done: any) {
       // @ts-expect-error ts-migrate(2322) FIXME: Type '{ visualizationName: string; column: any; on... Remove this comment to see the full error message
       visualizationName="Test"
       column={column}
+      // @ts-expect-error ts-migrate(2322) FIXME: Type '{ visualizationName: string; column: any; on... Remove this comment to see the full error message
       onChange={changedColumn => {
         expect(changedColumn).toMatchSnapshot();
         done();
