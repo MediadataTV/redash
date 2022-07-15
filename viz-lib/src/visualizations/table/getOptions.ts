@@ -57,6 +57,7 @@ function getDefaultColumnsOptions(columns: any) {
     allowHTML: true,
     highlightLinks: false,
     JsonArrayFieldPath: '',
+    width: '',
   }));
 }
 

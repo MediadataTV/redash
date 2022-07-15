@@ -1,4 +1,4 @@
-import { isNil, map, get, filter, each, sortBy, some, findIndex, toString } from "lodash";
+import { isNil, isNumber, map, get, filter, each, sortBy, some, findIndex, toString, isEmpty } from "lodash";
 import React from "react";
 import cx from "classnames";
 import Tooltip from "antd/lib/tooltip";
@@ -72,6 +72,7 @@ export function prepareColumns(columns: any, searchInput: any, orderBy: any, onO
       align: column.alignContent,
       sorter: { multiple: 1 }, // using { multiple: 1 } to allow built-in multi-column sort arrows
       sortOrder: get(orderByInfo, [column.name, "direction"], null),
+      width: column.width*1,
       title: (
         <React.Fragment>
           {column.description && (
