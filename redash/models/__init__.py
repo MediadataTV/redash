@@ -5,7 +5,9 @@ import time
 import numbers
 import pytz
 
-from sqlalchemy import distinct, or_, and_, UniqueConstraint, cast
+from enum import Enum
+
+from sqlalchemy import distinct, or_, and_, UniqueConstraint, cast, Enum as SqlAlchemyEnum
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.event import listens_for
 from sqlalchemy.ext.hybrid import hybrid_property
@@ -30,7 +32,8 @@ from redash.query_runner import (
     TYPE_BOOLEAN,
     TYPE_DATE,
     TYPE_DATETIME,
-    BaseQueryRunner)
+    BaseQueryRunner
+)
 from redash.utils import (
     generate_token,
     json_dumps,
@@ -38,7 +41,8 @@ from redash.utils import (
     mustache_render,
     base_url,
     sentry,
-    gen_query_hash)
+    gen_query_hash
+)
 from redash.utils.configuration import ConfigurationContainer
 from redash.models.parameterized_query import ParameterizedQuery
 
@@ -57,6 +61,28 @@ from .types import (
 from .users import AccessPermission, AnonymousUser, ApiUser, Group, User  # noqa
 
 logger = logging.getLogger(__name__)
+
+
+class SQLAclPermission(Enum):
+    ALLOW = 'ALLOW'
+    DENY = 'DENY'
+
+
+class SQLAcl(Enum):
+    SELECT = "SELECT"
+    OPTIMIZE = "OPTIMIZE"
+    TRUNCATE = "TRUNCATE"
+    CACHE = "CACHE_CONTROL"
+    DDL_SCHEMAS = "DDL_SCHEMAS"
+    DDL_VIEWS = "DDL_VIEWS"
+    DDL_TABLES = "DDL_TABLES"
+    DDL_FUNCTIONS = "DDL_FUNCTIONS"
+    DML = "DML"
+    DATA_LOAD = "DATA_LOAD"
+    DATA_ADD = "DATA_ADD"
+    DESCRIBE = "DESCRIBE"
+    USE = "USE"
+    SET = "SET"
 
 
 class ScheduledQueriesExecutions(object):
@@ -154,6 +180,7 @@ class DataSource(BelongsToOrgMixin, db.Model):
         data_source_group = DataSourceGroup(
             data_source=data_source, group=data_source.org.default_group
         )
+        QueryAcl().create_default(data_source=data_source, group=data_source.org.default_group)
         db.session.add_all([data_source, data_source_group])
         return data_source
 
@@ -246,6 +273,11 @@ class DataSource(BelongsToOrgMixin, db.Model):
         DataSourceGroup.query.filter(
             DataSourceGroup.group == group, DataSourceGroup.data_source == self
         ).delete()
+
+        QueryAcl.query.filter(
+            QueryAcl.group == group, QueryAcl.data_source == self
+        ).delete()
+
         db.session.commit()
 
     def update_group_permission(self, group, view_only):
@@ -625,10 +657,10 @@ class Query(ChangeTrackingMixin, TimestampMixin, BelongsToOrgMixin, db.Model):
             query
             for query in queries
             if query.schedule["until"] is not None
-            and pytz.utc.localize(
+               and pytz.utc.localize(
                 datetime.datetime.strptime(query.schedule["until"], "%Y-%m-%d")
             )
-            <= now
+               <= now
         ]
 
     @classmethod
@@ -678,7 +710,8 @@ class Query(ChangeTrackingMixin, TimestampMixin, BelongsToOrgMixin, db.Model):
                 db.session.commit()
 
                 message = (
-                    "Could not determine if query %d is outdated due to %s. The schedule for this query has been disabled."
+                    "Could not determine if query %d is outdated due to %s. The schedule for this query has been "
+                    "disabled."
                     % (query.id, repr(e))
                 )
                 logging.info(message)
@@ -1490,6 +1523,80 @@ class QuerySnippet(TimestampMixin, db.Model, BelongsToOrgMixin):
             "user": self.user.to_dict(),
             "updated_at": self.updated_at,
             "created_at": self.created_at,
+        }
+
+        return d
+
+
+@generic_repr("id", "group_id", "data_source_id", "acl_type", "acl_permission")
+class QueryAcl(db.Model, BelongsToOrgMixin):
+    id = primary_key("QueryAcl")
+    group_id = Column(key_type("Group"), db.ForeignKey("groups.id"))
+    data_source_id = Column(key_type("DataSource"), db.ForeignKey("data_sources.id"))
+    acl_type = Column(SqlAlchemyEnum(SQLAcl))
+    acl_permission = Column(SqlAlchemyEnum(SQLAclPermission))
+    group = db.relationship(Group, backref=backref("query_acl"))
+    data_source = db.relationship(DataSource, backref=backref("query_acl"))
+
+    __tablename__ = "query_acl"
+    __table_args__ = (
+        UniqueConstraint("group_id", "data_source_id", "acl_type", "acl_permission", name="unique_acl_permission"),
+    )
+
+    @classmethod
+    def create_default(cls, group, data_source):
+        created = []
+        for acl in SQLAcl:
+            query_acl = cls(
+                group_id=group.id,
+                data_source_id=data_source.id,
+                acl_type=acl.name,
+                acl_permission=SQLAclPermission.ALLOW,
+            )
+            created.append({
+                'group_id': group,
+                'data_source_id': data_source,
+                'acl_type': acl.name,
+                'acl_permission': SQLAclPermission.ALLOW
+            }
+            )
+
+            db.session.add(query_acl)
+        return created
+
+    @classmethod
+    def get(cls, group, data_source):
+        return cls.query.filter(cls.group == group).filter(cls.data_source == data_source)
+
+    @classmethod
+    def save_acl(
+        cls, group, data_source, acl_data
+    ):
+        query_acl = cls.query.filter(
+            cls.group == group, QueryAcl.data_source == data_source
+        ).order_by(cls.id)
+        # for qa in query_acl:
+        #     qa
+        # dsg.view_only = view_only
+        # db.session.add(dsg)
+
+        logging.info("Updated query ACL (Group: %s - DataSource: %s) data;", group, data_source)
+
+        return query_acl
+
+    def delete(self):
+        res = db.session.delete(self)
+        db.session.commit()
+
+        return res
+
+    def to_dict(self):
+        d = {
+            "id": self.id,
+            "acl_type": self.acl_type,
+            "acl_permission": self.acl_permission,
+            "group": self.user.to_dict(),
+            "data_source": self.data_source.to_dict(),
         }
 
         return d

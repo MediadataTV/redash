@@ -16,6 +16,7 @@ import { StateStorage } from "@/components/items-list/classes/StateStorage";
 import LoadingState from "@/components/items-list/components/LoadingState";
 import ItemsTable, { Columns } from "@/components/items-list/components/ItemsTable";
 import SelectItemsDialog from "@/components/SelectItemsDialog";
+// import SetItemsValueDialog from "@/components/SetItemsValueDialog";
 import { DataSourcePreviewCard } from "@/components/PreviewCard";
 
 import GroupName from "@/components/groups/GroupName";
@@ -28,6 +29,7 @@ import notification from "@/services/notification";
 import { currentUser } from "@/services/auth";
 import Group from "@/services/group";
 import DataSource from "@/services/data-source";
+// import QueryAcl from "@/services/query-acl";
 import routes from "@/services/routes";
 
 class GroupDataSources extends React.Component {
@@ -85,6 +87,17 @@ class GroupDataSources extends React.Component {
         isAvailable: () => currentUser.isAdmin,
       }
     ),
+    // Columns.custom(
+    //   (text, datasource) => (
+    //     <Button className="w-100" type="primary" onClick={() => this.getQueryAcl(datasource)}>
+    //       Queries ACL
+    //     </Button>
+    //   ),
+    //   {
+    //     width: "1%",
+    //     isAvailable: () => currentUser.isAdmin,
+    //   }
+    // ),
     Columns.custom(
       (text, datasource) => (
         <Button className="w-100" type="danger" onClick={() => this.removeGroupDataSource(datasource)}>
@@ -108,6 +121,29 @@ class GroupDataSources extends React.Component {
         this.props.controller.handleError(error);
       });
   }
+
+  // getQueryAcl = datasource => {
+  //   const acl = QueryAcl.getAcl();
+  //   const aclPermission = QueryAcl.getAclPermission();
+  //   const alreadySavedAcl = QueryAcl.get(this.groupId, datasource.id);
+  //   SelectItemsDialog.showModal({
+  //     dialogTitle: "Modify Query Acl Sources",
+  //     items: alreadySavedAcl,
+  //     values: aclPermission,
+  //     renderItem: (item, { isSelected }) => {
+  //       return {
+  //         content: (
+  //           <DataSourcePreviewCard dataSource={item}>
+  //           </DataSourcePreviewCard>
+  //         ),
+  //         className: "",
+  //       };
+  //     }
+  //   }).onClose(items => {
+  //     const promises = map(items, ds => Group.addDataSource({ id: this.groupId }, { data_source_id: ds.id }));
+  //     return Promise.all(promises).then(() => this.props.controller.update());
+  //   });
+  // };
 
   removeGroupDataSource = datasource => {
     Group.removeDataSource({ id: this.groupId, dataSourceId: datasource.id })

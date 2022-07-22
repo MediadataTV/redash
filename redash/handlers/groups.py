@@ -146,6 +146,9 @@ class GroupDataSourceListResource(BaseResource):
         group = models.Group.get_by_id_and_org(group_id, self.current_org)
 
         data_source_group = data_source.add_group(group)
+
+        models.QueryAcl.create_default(data_source=data_source, group=group)
+
         models.db.session.commit()
 
         self.record_event(
@@ -187,6 +190,7 @@ class GroupDataSourceResource(BaseResource):
         view_only = request.json["view_only"]
 
         data_source_group = data_source.update_group_permission(group, view_only)
+
         models.db.session.commit()
 
         self.record_event(
@@ -219,3 +223,55 @@ class GroupDataSourceResource(BaseResource):
                 "member_id": data_source.id,
             }
         )
+
+
+class GroupDataSourceAclResource(BaseResource):
+    @require_admin
+    def get(self, group_id, data_source_id):
+        # group = get_object_or_404(
+        #     models.Group.get_by_id_and_org, group_id, self.current_org
+        # )
+
+        query_acl = models.QueryAcl.get(group_id, data_source_id)
+
+        self.record_event(
+            {
+                "action": "list",
+                "object_id": group_id,
+                "object_type": "group",
+                "member_id": data_source_id,
+                "sub_type": "query_acl"
+            }
+        )
+
+        return [qa.to_dict() for qa in query_acl]
+
+    @require_admin
+    def post(self, group_id, data_source_id):
+        acl_data = request.json["acl"]
+        query_acl = models.QueryAcl.save_acl(group_id, data_source_id, acl_data)
+        models.db.session.commit()
+
+        self.record_event(
+            {
+                "action": "upsert_group_datasource_acl",
+                "object_id": group_id,
+                "object_type": "group",
+                "member_id": data_source_id,
+                "acl_data": acl_data,
+            }
+        )
+
+        return query_acl.to_dict()
+
+
+class QueryAcl(BaseResource):
+    @require_admin
+    def get(self):
+        return [{'name': acl.name, 'value': acl.value} for acl in models.SQLAcl]
+
+
+class QueryAclPermission(BaseResource):
+    @require_admin
+    def get(self):
+        return [{'name': acl.name, 'value': acl.value} for acl in models.SQLAclPermission]

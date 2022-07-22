@@ -42,10 +42,13 @@ from redash.handlers.favorites import DashboardFavoriteResource, QueryFavoriteRe
 from redash.handlers.groups import (
     GroupDataSourceListResource,
     GroupDataSourceResource,
+    GroupDataSourceAclResource,
     GroupListResource,
     GroupMemberListResource,
     GroupMemberResource,
     GroupResource,
+    QueryAcl,
+    QueryAclPermission,
 )
 from redash.handlers.permissions import (
     CheckPermissionResource,
@@ -189,6 +192,17 @@ api.add_org_resource(
     GroupDataSourceResource,
     "/api/groups/<group_id>/data_sources/<data_source_id>",
     endpoint="group_data_source",
+)
+api.add_org_resource(
+    GroupDataSourceAclResource,
+    "/api/groups/<group_id>/data_sources/<data_source_id>/query_acl",
+    endpoint="group_data_source_query_acl",
+)
+api.add_org_resource(
+    QueryAcl, "/api/query_acl", endpoint="query_acl",
+)
+api.add_org_resource(
+    QueryAclPermission, "/api/query_acl/permission", endpoint="queries_acl_permission",
 )
 
 api.add_org_resource(EventsResource, "/api/events", endpoint="events")

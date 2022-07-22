@@ -62,6 +62,11 @@ RUN apt-get update && \
     apt-get clean && \
      rm -rf /var/lib/apt/lists/*
 
+# openjdk-11-jre-headless
+RUN apt update &&  \
+    apt install -y openjdk-11-jre-headless && \
+    apt-get clean && \
+     rm -rf /var/lib/apt/lists/*
 
 ARG TARGETPLATFORM
 ARG databricks_odbc_driver_url=https://databricks.com/wp-content/uploads/2.6.10.1010-2/SimbaSparkODBC-2.6.10.1010-2-Debian-64bit.zip
@@ -85,6 +90,7 @@ WORKDIR /app
 # Disable PIP Cache and Version Check
 ENV PIP_DISABLE_PIP_VERSION_CHECK=1
 ENV PIP_NO_CACHE_DIR=1
+ENV JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64/
 
 # rollback pip version to avoid legacy resolver problem
 RUN pip install pip==20.2.4;
