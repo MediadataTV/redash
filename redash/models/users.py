@@ -23,7 +23,6 @@ from .types import json_cast_property, MutableDict, MutableList
 
 logger = logging.getLogger(__name__)
 
-
 LAST_ACTIVE_KEY = "users:last_active_at"
 
 
@@ -253,6 +252,9 @@ class User(
             "{},{}".format(self.email, self.password_hash).encode()
         ).hexdigest()
         return "{0}-{1}".format(self.id, identity)
+
+    def get_groups(self):
+        return Group.query.filter(Group.id.in_(self.group_ids)).all()
 
 
 @generic_repr("id", "name", "type", "org_id")

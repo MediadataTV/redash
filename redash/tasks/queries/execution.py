@@ -1,3 +1,4 @@
+import json
 import signal
 import time
 import redis
@@ -151,6 +152,17 @@ def _resolve_user(user_id, is_api_key, query_id):
         return None
 
 
+def _resolve_acl(user, data_source):
+    acl_redis_key = 'query:acl:user::{}:datasource::{}'.format(user.id, data_source.id)
+    query_acl = redis_connection.get(acl_redis_key)
+    if query_acl is None:
+        query_acl = models.QueryAcl.get_by_user_and_datasource(user, data_source)
+        redis_connection.setex(acl_redis_key, 3600, json.dumps(query_acl))
+    else:
+        query_acl = json.loads(query_acl)
+    return query_acl
+
+
 class QueryExecutor(object):
     def __init__(
         self, query, data_source_id, user_id, is_api_key, metadata, is_scheduled_query
@@ -167,6 +179,7 @@ class QueryExecutor(object):
             if self.query_id and self.query_id != "adhoc"
             else None
         )
+        self.query_acl = _resolve_acl(self.user, self.data_source)
 
         # Close DB connection to prevent holding a connection for a long time while the query is executing.
         models.db.session.close()
@@ -196,30 +209,40 @@ class QueryExecutor(object):
         self._log_progress("executing_query")
 
         query_runner = self.data_source.query_runner
-        annotated_query = self._annotate_query(query_runner)
+        status, error = query_runner.check_query_acl(self.query, self.query_acl)
+        data = None
+        if status is True:
+            annotated_query = self._annotate_query(query_runner)
 
-        try:
-            data, error = query_runner.run_query(annotated_query, self.user)
-        except Exception as e:
-            if isinstance(e, JobTimeoutException):
-                error = TIMEOUT_MESSAGE
-            else:
-                error = str(e)
+            try:
+                data, error = query_runner.run_query(annotated_query, self.user)
+            except Exception as e:
+                if isinstance(e, JobTimeoutException):
+                    error = TIMEOUT_MESSAGE
+                else:
+                    error = str(e)
 
-            data = None
-            logger.warning("Unexpected error while running query:", exc_info=1)
+                data = None
+                logger.warning("Unexpected error while running query:", exc_info=1)
 
-        run_time = time.time() - started_at
+            run_time = time.time() - started_at
 
-        logger.info(
-            "job=execute_query query_hash=%s ds_id=%d data_length=%s error=[%s]",
-            self.query_hash,
-            self.data_source_id,
-            data and len(data),
-            error,
-        )
-
-        _unlock(self.query_hash, self.data_source.id)
+            logger.info(
+                "job=execute_query query_hash=%s ds_id=%d data_length=%s error=[%s]",
+                self.query_hash,
+                self.data_source_id,
+                data and len(data),
+                error,
+            )
+            _unlock(self.query_hash, self.data_source.id)
+        else:
+            logger.info(
+                "job=execute_query query_hash=%s ds_id=%d acl_status=%s error=[%s]",
+                self.query_hash,
+                self.data_source_id,
+                "True" if status else "False",
+                error,
+            )
 
         if error is not None and data is None:
             result = QueryExecutionError(error)

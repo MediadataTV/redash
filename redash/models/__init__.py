@@ -72,7 +72,7 @@ class SQLAcl(Enum):
     SELECT = "SELECT"
     OPTIMIZE = "OPTIMIZE"
     TRUNCATE = "TRUNCATE"
-    CACHE = "CACHE_CONTROL"
+    CACHE = "CACHE"
     DDL_SCHEMAS = "DDL_SCHEMAS"
     DDL_VIEWS = "DDL_VIEWS"
     DDL_TABLES = "DDL_TABLES"
@@ -1566,7 +1566,28 @@ class QueryAcl(db.Model, BelongsToOrgMixin):
 
     @classmethod
     def get(cls, group, data_source):
-        return cls.query.filter(cls.group == group).filter(cls.data_source == data_source)
+        return cls.query.filter(cls.group == group).filter(cls.data_source == data_source).all()
+
+    @classmethod
+    def get_by_user_and_datasource(cls, user, data_source, merge=True):
+        acl = cls.query.join(cls.group).filter(
+            Group.id.in_(user.group_ids), cls.data_source == data_source
+        ).all()
+        if merge is True:
+            merged_acl = {}
+            for a in acl:
+                type_key = a.acl_type.value
+                if type_key not in merged_acl or (a.acl_permission == SQLAclPermission.DENY):
+                    merged_acl[type_key] = {
+                        'id': a.id,
+                        'acl_type': a.acl_type.value,
+                        'acl_permission': a.acl_permission.value,
+                        'data_source': a.data_source.id,
+                        'group': a.group.id,
+                    }
+        else:
+            merged_acl = acl
+        return merged_acl
 
     @classmethod
     def save_acl(
@@ -1593,9 +1614,9 @@ class QueryAcl(db.Model, BelongsToOrgMixin):
     def to_dict(self):
         d = {
             "id": self.id,
-            "acl_type": self.acl_type,
-            "acl_permission": self.acl_permission,
-            "group": self.user.to_dict(),
+            "acl_type": self.acl_type.value,
+            "acl_permission": self.acl_permission.value,
+            "group": self.group.to_dict(),
             "data_source": self.data_source.to_dict(),
         }
 

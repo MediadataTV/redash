@@ -15,7 +15,6 @@ from rq.timeouts import JobTimeoutException
 
 from redash.utils.requests_session import requests_or_advocate, requests_session, UnacceptableAddressException
 
-
 logger = logging.getLogger(__name__)
 
 __all__ = [
@@ -84,8 +83,10 @@ class BaseQueryRunner(object):
         """Returns this query runner's configured host.
         This is used primarily for temporarily swapping endpoints when using SSH tunnels to connect to a data source.
 
-        `BaseQueryRunner`'s naïve implementation supports query runner implementations that store endpoints using `host` and `port`
-        configuration values. If your query runner uses a different schema (e.g. a web address), you should override this function.
+        `BaseQueryRunner`'s naïve implementation supports query runner implementations that store endpoints using
+        `host` and `port`
+        configuration values. If your query runner uses a different schema (e.g. a web address), you should override
+        this function.
         """
         if "host" in self.configuration:
             return self.configuration["host"]
@@ -97,8 +98,10 @@ class BaseQueryRunner(object):
         """Sets this query runner's configured host.
         This is used primarily for temporarily swapping endpoints when using SSH tunnels to connect to a data source.
 
-        `BaseQueryRunner`'s naïve implementation supports query runner implementations that store endpoints using `host` and `port`
-        configuration values. If your query runner uses a different schema (e.g. a web address), you should override this function.
+        `BaseQueryRunner`'s naïve implementation supports query runner implementations that store endpoints using
+        `host` and `port`
+        configuration values. If your query runner uses a different schema (e.g. a web address), you should override
+        this function.
         """
         if "host" in self.configuration:
             self.configuration["host"] = host
@@ -110,8 +113,10 @@ class BaseQueryRunner(object):
         """Returns this query runner's configured port.
         This is used primarily for temporarily swapping endpoints when using SSH tunnels to connect to a data source.
 
-        `BaseQueryRunner`'s naïve implementation supports query runner implementations that store endpoints using `host` and `port`
-        configuration values. If your query runner uses a different schema (e.g. a web address), you should override this function.
+        `BaseQueryRunner`'s naïve implementation supports query runner implementations that store endpoints using
+        `host` and `port`
+        configuration values. If your query runner uses a different schema (e.g. a web address), you should override
+        this function.
         """
         if "port" in self.configuration:
             return self.configuration["port"]
@@ -123,8 +128,10 @@ class BaseQueryRunner(object):
         """Sets this query runner's configured port.
         This is used primarily for temporarily swapping endpoints when using SSH tunnels to connect to a data source.
 
-        `BaseQueryRunner`'s naïve implementation supports query runner implementations that store endpoints using `host` and `port`
-        configuration values. If your query runner uses a different schema (e.g. a web address), you should override this function.
+        `BaseQueryRunner`'s naïve implementation supports query runner implementations that store endpoints using
+        `host` and `port`
+        configuration values. If your query runner uses a different schema (e.g. a web address), you should override
+        this function.
         """
         if "port" in self.configuration:
             self.configuration["port"] = port
@@ -150,6 +157,9 @@ class BaseQueryRunner(object):
 
         if error is not None:
             raise Exception(error)
+
+    def check_query_acl(self, query, query_acl):
+        return True, None
 
     def run_query(self, query, user):
         raise NotImplementedError()
@@ -204,6 +214,7 @@ class BaseQueryRunner(object):
 
 
 class BaseSQLQueryRunner(BaseQueryRunner):
+
     def get_schema(self, get_stats=False):
         schema_dict = {}
         self._get_tables(schema_dict)
