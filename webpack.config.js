@@ -75,6 +75,9 @@ const config = {
     filename: isProduction ? "[name].[chunkhash].js" : "[name].js",
     publicPath: staticPath
   },
+  node: {
+    fs: 'empty'
+  },
   resolve: {
     symlinks: false,
     extensions: [".js", ".jsx", ".ts", ".tsx"],
@@ -114,7 +117,8 @@ const config = {
       { from: "client/app/unsupported.html" },
       { from: "client/app/unsupportedRedirect.js" },
       { from: "client/app/assets/css/*.css", to: "styles/", flatten: true },
-      { from: "client/app/assets/fonts", to: "fonts/" }
+      { from: "client/app/assets/fonts", to: "fonts/" },
+      { from: "client/app/assets/user-guide", to: "user-guide/" }
     ]),
     isHotReloadingEnabled && new ReactRefreshWebpackPlugin({ overlay: false })
   ].filter(Boolean),
@@ -189,13 +193,39 @@ const config = {
         ]
       },
       {
-        test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
+        test: /\.(mp4)(\?.*)?$/,
         use: [
           {
             loader: "file-loader",
             options: {
               context: path.resolve(appPath, "./assets/images/"),
               outputPath: "images/",
+              name: "[path][name].[ext]"
+            }
+          }
+        ]
+      },
+      {
+        test: /\.(png|jpe?g|gif|mp4|svg|mp4)(\?.*)?$/,
+        use: [
+          {
+            loader: "file-loader",
+            options: {
+              context: path.resolve(appPath, "./assets/images/"),
+              outputPath: "images/",
+              name: "[path][name].[ext]"
+            }
+          }
+        ]
+      },
+      {
+        test: /\.(md)(\?.*)?$/,
+        use: [
+          {
+            loader: "file-loader",
+            options: {
+              context: path.resolve(appPath, "./assets/user-guide/"),
+              outputPath: "user-guide/",
               name: "[path][name].[ext]"
             }
           }

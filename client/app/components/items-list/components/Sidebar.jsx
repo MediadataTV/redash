@@ -1,4 +1,4 @@
-import { isFunction, isString, filter, map } from "lodash";
+import { isFunction, isString, filter } from "lodash";
 import React, { useState, useCallback, useEffect } from "react";
 import PropTypes from "prop-types";
 import Input from "antd/lib/input";
@@ -34,8 +34,7 @@ export function SearchInput({ placeholder, value, showIcon, onChange, label }) {
         placeholder={placeholder}
         value={currentValue}
         aria-label={label}
-        onChange={onInputChange}
-      />
+        onChange={onInputChange} />
     </div>
   );
 }
@@ -58,27 +57,47 @@ SearchInput.defaultProps = {
     Menu
  */
 
-export function Menu({ items, selected }) {
+const renderMenuItems = (items) => {
+  return items.map(item => {
+    if(item.hasOwnProperty('children') && item.children.length > 0){
+      return (
+//         if(isString(item.icon) && item.icon !== ""){
+//           <span className="btn-favorite m-r-5">
+//             <i className={item.icon} aria-hidden="true" />
+//           </span>
+//         }
+//         {isFunction(item.icon) && (item.icon(item) || null)}
+        <AntdMenu.SubMenu key={item.key} title={item.title} icon={item.icon}>
+          {renderMenuItems(item.children)}
+        </AntdMenu.SubMenu>
+      );
+    }else{
+      return (
+      <AntdMenu.Item key={item.key} className="m-0">
+        <Link href={item.href}>
+          {isString(item.icon) && item.icon !== "" && (
+            <span className="btn-favorite m-r-5">
+              <i className={item.icon} aria-hidden="true" />
+            </span>
+          )}
+          {isFunction(item.icon) && (item.icon(item) || null)}
+          {item.title}
+        </Link>
+      </AntdMenu.Item>
+      );
+    }
+  });
+};
+
+export function Menu({ items, opened, selected }) {
   items = filter(items, item => (isFunction(item.isAvailable) ? item.isAvailable() : true));
   if (items.length === 0) {
     return null;
   }
   return (
     <div className="m-b-10 tags-list tiled">
-      <AntdMenu className="invert-stripe-position" mode="inline" selectable={false} selectedKeys={[selected]}>
-        {map(items, item => (
-          <AntdMenu.Item key={item.key} className="m-0">
-            <Link href={item.href}>
-              {isString(item.icon) && item.icon !== "" && (
-                <span className="btn-favorite m-r-5">
-                  <i className={item.icon} aria-hidden="true" />
-                </span>
-              )}
-              {isFunction(item.icon) && (item.icon(item) || null)}
-              {item.title}
-            </Link>
-          </AntdMenu.Item>
-        ))}
+      <AntdMenu className="invert-stripe-position" mode="inline" selectable={false} selectedKeys={[selected]} defaultOpenKeys={opened}>
+        {renderMenuItems(items)}
       </AntdMenu>
     </div>
   );

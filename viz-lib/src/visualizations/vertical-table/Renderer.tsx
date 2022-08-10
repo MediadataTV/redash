@@ -9,7 +9,8 @@ import { RendererPropTypes } from "@/visualizations/prop-types";
 import { prepareColumns, initRows } from "./utils";
 
 import "../table/renderer.less";
-import { Descriptions, Pagination } from "antd";
+import Descriptions from "antd/lib/descriptions";
+import Pagination from "antd/lib/pagination";
 
 function joinColumns(array: any, separator = ", ") {
   return reduce(
