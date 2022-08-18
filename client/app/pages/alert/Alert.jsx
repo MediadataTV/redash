@@ -23,7 +23,7 @@ const MODES = {
   EDIT: 2,
 };
 
-const defaultNameBuilder = template("<%= query.name %>: <%= options.column %> <%= options.op %> <%= options.value %>");
+const defaultNameBuilder = template("<%= query.name %>: [<%= options.criteria %>] <%= options.column %> <%= options.op %> <%= options.value %>");
 
 export function getDefaultName(alert) {
   if (!alert.query) {
@@ -64,6 +64,7 @@ class Alert extends React.Component {
       this.setState({
         alert: {
           options: {
+            criteria: "column-value",
             op: ">",
             value: 1,
             muted: false,

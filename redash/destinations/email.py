@@ -35,7 +35,7 @@ class Email(BaseDestination):
             logging.warning("No emails given. Skipping send.")
 
         if alert.custom_body:
-            html = alert.custom_body
+            html = alert.custom_body_html
         else:
             html = """
             Check <a href="{host}/alerts/{alert_id}">alert</a> / check

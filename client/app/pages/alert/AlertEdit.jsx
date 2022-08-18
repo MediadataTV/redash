@@ -99,6 +99,8 @@ export default class AlertEdit extends React.Component {
                       query={query}
                       columnNames={queryResult.getColumnNames()}
                       resultValues={queryResult.getData()}
+                      template={options.notification_template}
+                      setTemplate={template => onNotificationTemplateChange({ notification_template: template })}
                       subject={options.custom_subject}
                       setSubject={subject => onNotificationTemplateChange({ custom_subject: subject })}
                       body={options.custom_body}

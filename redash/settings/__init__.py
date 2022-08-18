@@ -299,6 +299,7 @@ def email_server_is_configured():
 
 
 HOST = os.environ.get("REDASH_HOST", "")
+HOST_PROTOCOL = os.environ.get("REDASH_HOST_PROTOCOL", "http")
 
 SEND_FAILURE_EMAIL_INTERVAL = int(
     os.environ.get("REDASH_SEND_FAILURE_EMAIL_INTERVAL", 60)
