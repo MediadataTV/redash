@@ -37,31 +37,80 @@ DisabledInput.propTypes = {
 
 export default function Criteria({ columnNames, resultValues, alertOptions, onChange, editMode }) {
   const columnValue = !isEmpty(resultValues) ? head(resultValues)[alertOptions.column] : null;
+
   const invalidMessage = (() => {
     // bail if condition is valid for strings
-    if (includes(VALID_STRING_CONDITIONS, alertOptions.op)) {
-      return null;
-    }
+    if(alertOptions.criteria === 'column-value'){
+      if (includes(VALID_STRING_CONDITIONS, alertOptions.op)) {
+        return null;
+      }
 
-    if (isNaN(alertOptions.value)) {
-      return "Value column type doesn't match threshold type.";
-    }
+      if (isNaN(alertOptions.value)) {
+        return "Value column type doesn't match threshold type.";
+      }
 
-    if (isNaN(columnValue)) {
-      return "Value column isn't supported by condition type.";
+      if (isNaN(columnValue)) {
+        return "Value column isn't supported by condition type.";
+      }
     }
 
     return null;
   })();
 
-  const columnHint = (
-    <small className="alert-criteria-hint">
-      Top row value is <code className="p-0">{toString(columnValue) || "unknown"}</code>
-    </small>
-  );
+  const columnHint = (() => {
+    switch(alertOptions.criteria){
+      case 'count-result':
+        return (
+          <small className="alert-criteria-hint">
+            Query result count value is: <code className="p-0">{resultValues.length || "unknown"}</code>
+          </small>
+        );
+      default:
+      case 'column-value':
+        return (
+          <small className="alert-criteria-hint">
+            Top row value is : <code className="p-0">{toString(columnValue) || "unknown"}</code>
+          </small>
+        );
+
+    }
+  })();
+
+
+  const allCriterias = {
+    'column-value' : {
+      label: 'Column value criteria', onChange: ()=>{ onChange({column: head(columnNames)}) }
+     },
+    'count-result' : {
+      label: 'Count result criteria', onChange: ()=>{ onChange({column: null})}
+    },
+  };
+
+  const onChangeType = obj => {
+    onChange(obj);
+    allCriterias[obj.criteria].onChange();
+  };
+
 
   return (
     <div data-test="Criteria">
+      <div className="input-title">
+        <span className="input-label">Alert criteria select</span>
+        {editMode ? (
+          <Select
+            value={alertOptions.criteria}
+            onChange={criteria => onChangeType({ criteria })}
+            dropdownMatchSelectWidth={false}
+            style={{ minWidth: 160 }}>
+            {Object.keys(allCriterias).map(key => (
+              <Select.Option key={key}>{allCriterias[key].label}</Select.Option>
+            ))}
+          </Select>
+        ) : (
+          <DisabledInput minWidth={70}>{allCriterias[alertOptions.criteria].label}</DisabledInput>
+        )}
+      </div>
+      { alertOptions.criteria === 'column-value' ? (
       <div className="input-title">
         <span className="input-label">Value column</span>
         {editMode ? (
@@ -78,6 +127,8 @@ export default function Criteria({ columnNames, resultValues, alertOptions, onCh
           <DisabledInput minWidth={70}>{alertOptions.column}</DisabledInput>
         )}
       </div>
+      )
+      : ''}
       <div className="input-title">
         <span className="input-label">Condition</span>
         {editMode ? (

@@ -3,6 +3,7 @@ from flask_restful import Api
 from werkzeug.wrappers import Response
 
 from redash.handlers.alerts import (
+    AlertTemplateRenderResource,
     AlertListResource,
     AlertResource,
     AlertMuteResource,
@@ -114,6 +115,7 @@ def json_representation(data, code, headers=None):
     return resp
 
 
+api.add_org_resource(AlertTemplateRenderResource, "/api/alerts/template-render", endpoint="alert_template_render")
 api.add_org_resource(AlertResource, "/api/alerts/<alert_id>", endpoint="alert")
 api.add_org_resource(
     AlertMuteResource, "/api/alerts/<alert_id>/mute", endpoint="alert_mute"

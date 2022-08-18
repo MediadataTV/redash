@@ -9,6 +9,7 @@ import random
 import re
 import uuid
 import binascii
+import traceback
 
 import pystache
 import pytz
@@ -18,12 +19,14 @@ from flask import current_app
 from funcy import select_values
 from redash import settings
 from sqlalchemy.orm.query import Query
-
+from html.parser import HTMLParser
 from .human_time import parse_human_time
+from .jinja_templating import register_filters
 
 COMMENTS_REGEX = re.compile("/\*.*?\*/")
 WRITER_ENCODING = os.environ.get("REDASH_CSV_WRITER_ENCODING", "utf-8")
 WRITER_ERRORS = os.environ.get("REDASH_CSV_WRITER_ERRORS", "strict")
+jinja_env = register_filters()
 
 
 def utcnow():
@@ -120,9 +123,50 @@ def json_dumps(data, *args, **kwargs):
     return simplejson.dumps(data, *args, **kwargs)
 
 
+def exception_to_dict(exception):
+    main_exception = traceback.format_exception_only(type(exception), exception)
+    tb_list = traceback.format_exception(type(exception), exception, exception.__traceback__) + main_exception
+
+    return {'error': main_exception[0] if len(main_exception) > 0 else '', 'traceback': tb_list}
+
+
+class MLRemover(HTMLParser):
+    def __init__(self):
+        super().__init__(convert_charrefs=False)
+        self.reset()
+        self.convert_charrefs = True
+        self.fed = []
+
+    def handle_data(self, data):
+        self.fed.append(data)
+
+    def handle_entityref(self, name):
+        self.fed.append(f'&{name};')
+
+    def handle_charref(self, name):
+        self.fed.append(f'&#{name};')
+
+    def get_data(self):
+        return ''.join(self.fed)
+
+
+def strip_html(value):
+    remover = MLRemover()
+    remover.feed(value)
+    remover.close()
+    return remover.get_data()
+
+
 def mustache_render(template, context=None, **kwargs):
     renderer = pystache.Renderer(escape=lambda u: u)
-    return renderer.render(template, context, **kwargs)
+    return strip_html(renderer.render(template, context, **kwargs))
+
+
+def jinja_render(template, context=None, render_html=True, skip_tables=False, **kwargs):
+    context['render_html'] = render_html
+    context['skip_tables'] = skip_tables
+    renderer = jinja_env.from_string(template)
+    return renderer.render(context, **kwargs)
 
 
 def build_url(request, host, path):
@@ -183,9 +227,9 @@ def collect_parameters_from_request(args):
 
 def base_url(org):
     if settings.MULTI_ORG:
-        return "https://{}/{}".format(settings.HOST, org.slug)
+        return "{}://{}/{}".format(settings.HOST_PROTOCOL, settings.HOST, org.slug)
 
-    return settings.HOST
+    return "{}://{}".format(settings.HOST_PROTOCOL, settings.HOST)
 
 
 def filter_none(d):

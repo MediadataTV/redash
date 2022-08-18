@@ -38,6 +38,80 @@ manager.add_command(run_command, "runserver")
 
 
 @manager.command()
+def test():
+    """Test data."""
+    from redash import models
+    import requests
+    from redash.utils import json_dumps, base_url
+    org = models.Organization.get_by_id(1)
+    alert = models.Alert.get_by_id_and_org(4, org)
+    host = base_url(alert.query_rel.org)
+    query = alert.query_rel
+    # print(alert.custom_body)
+
+    url = 'https://chat.googleapis.com/v1/spaces/AAAARjM2NVs/messages?key=AIzaSyDdI0hCZtE6vySjMm-WEfRq3CPzqKqqsHI&token=nST7hqwIdDzNqS_vy6My8GVsG5-66rkkzY7eA-PdiiY%3D'
+    try:
+        message = '<b><font color="#c0392b">Triggered</font></b>'
+
+        if alert.custom_subject:
+            title = alert.custom_subject
+        else:
+            title = alert.name
+
+        data = {
+            "cards": [
+                {
+                    "header": {"title": title},
+                    "sections": [
+                        {"widgets": [{"textParagraph": {"text": message}}]}
+                    ],
+                }
+            ]
+        }
+
+        if alert.custom_body:
+            data["cards"][0]["sections"].append(
+                {"widgets": [{"textParagraph": {"text": alert.custom_body_skiptables}}]}
+            )
+
+        # Hangouts Chat will create a blank card if an invalid URL (no hostname) is posted.
+        if host:
+            data["cards"][0]["sections"][0]["widgets"].append(
+                {
+                    "buttons": [
+                        {
+                            "textButton": {
+                                "text": "OPEN QUERY",
+                                "onClick": {
+                                    "openLink": {
+                                        "url": "{host}/queries/{query_id}".format(
+                                            host=host, query_id=query.id
+                                        )
+                                    }
+                                },
+                            }
+                        }
+                    ]
+                }
+            )
+
+        headers = {"Content-Type": "application/json; charset=UTF-8"}
+        resp = requests.post(
+            url, data=json_dumps(data), headers=headers, timeout=5.0
+        )
+        print(data)
+        # if resp.status_code != 200:
+        #     print(
+        #         "webhook send ERROR. status_code => {status}".format(
+        #             status=resp.status_code
+        #         )
+        #     )
+    except Exception as e:
+        print(e)
+        print("webhook send ERROR.")
+
+
+@manager.command()
 def version():
     """Displays Redash version."""
     print(__version__)

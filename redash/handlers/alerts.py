@@ -12,7 +12,32 @@ from redash.permissions import (
     require_permission,
     view_only,
 )
-from redash.utils import json_dumps
+from redash.utils import (
+    json_dumps,
+    exception_to_dict,
+    strip_html,
+    jinja_render,
+)
+
+
+class AlertTemplateRenderResource(BaseResource):
+    def post(self):
+        req = request.get_json(True)
+        body = req["body"]
+        subject = req["subject"]
+        data = req["data"]
+        http_status = 200
+        try:
+            output = {
+                "subject": jinja_render(subject, data),
+                "body_plain": jinja_render(body, data, render_html=False),
+                "body_html": jinja_render(body, data, render_html=True),
+            }
+        except Exception as e:
+            output = exception_to_dict(e)
+            http_status = 400
+
+        return output, http_status
 
 
 class AlertResource(BaseResource):

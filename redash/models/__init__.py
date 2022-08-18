@@ -39,6 +39,8 @@ from redash.utils import (
     json_dumps,
     json_loads,
     mustache_render,
+    strip_html,
+    jinja_render,
     base_url,
     sentry,
     gen_query_hash
@@ -1035,13 +1037,22 @@ class Alert(TimestampMixin, BelongsToOrgMixin, db.Model):
 
     def evaluate(self):
         data = self.query_rel.latest_query_data.data
+        results_count = len(data["rows"])
+        process = False
 
-        if data["rows"] and self.options["column"] in data["rows"][0]:
-            op = OPERATORS.get(self.options["op"], lambda v, t: False)
-
+        if self.options["criteria"] == 'column-value':
             value = data["rows"][0][self.options["column"]]
-            threshold = self.options["value"]
+            process = data["rows"] and self.options["column"] in data["rows"][0]
+        elif self.options["criteria"] == 'count-result':
+            value = results_count
+            process = True
+        else:
+            value = None
 
+        if process:
+            op = OPERATORS.get(self.options["op"], lambda v, t: False)
+            # value = data["rows"][0][self.options["column"]]
+            threshold = self.options["value"]
             new_state = next_state(op, value, threshold)
         else:
             new_state = self.UNKNOWN_STATE
@@ -1053,7 +1064,7 @@ class Alert(TimestampMixin, BelongsToOrgMixin, db.Model):
             AlertSubscription.alert == self
         )
 
-    def render_template(self, template):
+    def render_template(self, template, html=False, skip_tables=False):
         if template is None:
             return ""
 
@@ -1080,12 +1091,46 @@ class Alert(TimestampMixin, BelongsToOrgMixin, db.Model):
             "QUERY_RESULT_ROWS": data["rows"],
             "QUERY_RESULT_COLS": data["columns"],
         }
-        return mustache_render(template, context)
+
+        html_style = """
+        <style>
+        table {width: 100%; text-align: left; border-radius: 0 0 0 0; border-collapse: separate; border-spacing: 0;}
+        thead { display: table-header-group; vertical-align: middle; border-color: inherit;}
+        tr > th { padding: 14px 10px; color: #333; font-weight: 500;  text-align: left;
+        background: rgba(102, 136, 153, 0.03); border-bottom: 1px solid #f0f0f0; transition: background 0.3s ease; }
+        tr > th,  tr > td { position: relative; padding: 7px 10px; overflow-wrap: break-word; }
+        tbody { display: table-row-group; vertical-align: middle; border-color: inherit; }
+        tr > td { border-bottom: 1px solid #f0f0f0; transition: background 0.3s; }
+        span.sep{ display: none; visibility: hidden; }
+        </style>
+        """
+
+        rendered_template = jinja_render(template, context, render_html=html, skip_tables=skip_tables)
+        if html:
+            output = html_style + rendered_template
+        else:
+            output = strip_html(rendered_template)
+        return output
 
     @property
     def custom_body(self):
         template = self.options.get("custom_body", self.options.get("template"))
         return self.render_template(template)
+
+    @property
+    def custom_body_skiptables(self):
+        template = self.options.get("custom_body", self.options.get("template"))
+        return self.render_template(template, skip_tables=True)
+
+    @property
+    def custom_body_html(self):
+        template = self.options.get("custom_body", self.options.get("template"))
+        return self.render_template(template, html=True)
+
+    @property
+    def custom_body_html_skiptables(self):
+        template = self.options.get("custom_body", self.options.get("template"))
+        return self.render_template(template, html=True, skip_tables=True)
 
     @property
     def custom_subject(self):

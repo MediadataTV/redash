@@ -65,7 +65,7 @@ class HangoutsChat(BaseDestination):
 
             if alert.custom_body:
                 data["cards"][0]["sections"].append(
-                    {"widgets": [{"textParagraph": {"text": alert.custom_body}}]}
+                    {"widgets": [{"textParagraph": {"text": alert.custom_body_skiptables}}]}
                 )
 
             if options.get("icon_url"):

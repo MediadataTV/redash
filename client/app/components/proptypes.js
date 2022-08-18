@@ -64,6 +64,7 @@ export const Query = PropTypes.shape({
 });
 
 export const AlertOptions = PropTypes.shape({
+  criteria: PropTypes.oneOf(["column-value", "count-result"]),
   column: PropTypes.string,
   op: PropTypes.oneOf([">", ">=", "<", "<=", "==", "!="]),
   value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
@@ -82,6 +83,7 @@ export const Alert = PropTypes.shape({
   user: UserProfile,
   query: Query,
   options: PropTypes.shape({
+    criteria: PropTypes.string,
     column: PropTypes.string,
     op: PropTypes.string,
     value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),

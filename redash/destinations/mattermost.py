@@ -25,17 +25,15 @@ class Mattermost(BaseDestination):
 
     def notify(self, alert, query, user, new_state, app, host, options):
         if alert.custom_subject:
-            text = alert.custom_subject
+            text = "<!channel> {}".format(alert.custom_subject)
         elif new_state == "triggered":
-            text = "#### " + alert.name + " just triggered"
+            text = "#### <!channel> {} just triggered".format(alert.name)
         else:
-            text = "#### " + alert.name + " went back to normal"
+            text = "#### <!channel> {} went back to normal".format(alert.name)
         payload = {"text": text}
 
         if alert.custom_body:
-            payload["attachments"] = [
-                {"fields": [{"title": "Description", "value": alert.custom_body}]}
-            ]
+            payload["text"] = "\n\n{}".format(alert.custom_body)
 
         if options.get("username"):
             payload["username"] = options.get("username")

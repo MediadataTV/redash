@@ -3,7 +3,6 @@ import datetime
 from redash.worker import job, get_job_logger
 from redash import models, utils
 
-
 logger = get_job_logger(__name__)
 
 
