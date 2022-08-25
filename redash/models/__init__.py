@@ -1092,22 +1092,30 @@ class Alert(TimestampMixin, BelongsToOrgMixin, db.Model):
             "QUERY_RESULT_COLS": data["columns"],
         }
 
+        html_base = """
+        <html><head>{}</head>
+        <body><div id="alerthtml">{}</div></body>
+        </html>
+        """
+
         html_style = """
         <style>
-        table {width: 100%; text-align: left; border-radius: 0 0 0 0; border-collapse: separate; border-spacing: 0;}
-        thead { display: table-header-group; vertical-align: middle; border-color: inherit;}
-        tr > th { padding: 14px 10px; color: #333; font-weight: 500;  text-align: left;
+        #alerthtml {font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,
+        Helvetica Neue,sans-serif; font-size: 1em;}
+        #alerthtml table {width: 100%; text-align: left; border-radius: 0 0 0 0; border-collapse: separate;
+        border-spacing: 0; border: 1px solid #f0f0f0; margin-top:1em;}
+        #alerthtml thead { display: table-header-group; vertical-align: middle; border-color: inherit;}
+        #alerthtml tr > th { padding: 14px 10px; color: #333; font-weight: bold;  text-align: left;
         background: rgba(102, 136, 153, 0.03); border-bottom: 1px solid #f0f0f0; transition: background 0.3s ease; }
-        tr > th,  tr > td { position: relative; padding: 7px 10px; overflow-wrap: break-word; }
-        tbody { display: table-row-group; vertical-align: middle; border-color: inherit; }
-        tr > td { border-bottom: 1px solid #f0f0f0; transition: background 0.3s; }
-        span.sep{ display: none; visibility: hidden; }
+        #alerthtml tr > th,  tr > td { position: relative; padding: 7px 10px; overflow-wrap: break-word; }
+        #alerthtml tbody { display: table-row-group; vertical-align: middle; border-color: inherit; }
+        #alerthtml tr > td { border-bottom: 1px solid #f0f0f0; transition: background 0.3s; }
         </style>
         """
 
         rendered_template = jinja_render(template, context, render_html=html, skip_tables=skip_tables)
         if html:
-            output = html_style + rendered_template
+            output = html_base.format(html_style, rendered_template)
         else:
             output = strip_html(rendered_template)
         return output

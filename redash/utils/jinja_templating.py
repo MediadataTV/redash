@@ -2,10 +2,11 @@ from jinja2 import Environment, BaseLoader, contextfilter
 from jinja2.runtime import Context
 import pandas
 
+
 @contextfilter
 def _j2_alert_table_filter(ctxt: Context, dict_list):
     filter_out = ''
-    results = 5
+    results = 50
     render_html = ctxt.get('render_html', False)
     skip_rendering = ctxt.get('skip_tables', False)
 
@@ -15,7 +16,9 @@ def _j2_alert_table_filter(ctxt: Context, dict_list):
         df = pandas.DataFrame.from_dict(dict_df).reset_index(drop=True)
         caption = '(Table sample is limited to {} results)'.format(results)
         if render_html:
-            filter_out = "<legend>{}</legend>".format(caption) + df.to_html(index=False)
+            filter_out = "<legend>{}</legend>".format(caption) + df.to_html(index=False, border=0,
+                                                                            table_id="alert_table", render_links=True
+                                                                            )
         else:
             filter_out = "{}\n\n".format(caption) + df.to_markdown(index=False)
 

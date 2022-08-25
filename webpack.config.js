@@ -285,7 +285,8 @@ const config = {
           "/setup",
           "/status.json",
           "/api",
-          "/oauth"
+          "/oauth",
+          "/proxy"
         ],
         target: redashBackend + "/",
         changeOrigin: false,

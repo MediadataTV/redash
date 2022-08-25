@@ -217,3 +217,36 @@ You can also access the parameter mapping interface by clicking the vertical ell
 - **Widget parameter:** This option will display a value selector inside your dashboard widget. This is useful for one-off parameters that are not shared between widgets.
 
 - **Static value:** Selecting this option will let you choose a static value for this widget, regardless of the values used on other widgets. Statically mapped parameter values do not display a value selector anywhere on the dashboard which is more compact. This lets you take advantage of the flexibility of Query Parameters without cluttering the user interface on a dashboard when certain parameters are not expected to change frequently.
+
+### Optional parameters and templating
+
+The query parser can also handle simple Jinja templates.
+
+This feature is useful when optional query parameters are needed.
+
+#### Example
+
+```sql
+SELECT
+  id,
+  type,
+  name,
+  alternate_name,
+  image
+FROM
+  {{tblName}}
+{% if '{{programId}}' %}
+WHERE id = '{{programId}}'
+{% endif %}
+```
+
+:::warning
+When putting parameters to be evaluated into Jinja markup make sure to enclose parameters with **single or double comma**
+:::
+
+:::info
+**Note on statements execution**:
+
+If more than one statement is provided to SQL console of this environment, only **the first statement** will be
+executed, the remaining statements wil be discarded.
+:::

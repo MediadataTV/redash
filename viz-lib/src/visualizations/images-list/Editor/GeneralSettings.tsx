@@ -2,6 +2,8 @@ import { map } from "lodash";
 import React from "react";
 import { Section, Select, Input } from "@/components/visualizations/editor";
 import { EditorPropTypes } from "@/visualizations/prop-types";
+import { visualizationsSettings } from "@/visualizations/visualizationsSettings";
+
 
 export default function GeneralSettings({ options, data, visualizationName, onOptionsChange }: any) {
   return (
@@ -32,6 +34,7 @@ export default function GeneralSettings({ options, data, visualizationName, onOp
           data-test="ImagesList.General.Src"
           defaultValue={options.imageSrc}
           onChange={(e: any) => onOptionsChange({ imageSrc: e.target.value })}
+          suffix={visualizationsSettings.FaIconComponent('fa-asterisk')}
         />
       </Section>
 
@@ -43,6 +46,7 @@ export default function GeneralSettings({ options, data, visualizationName, onOp
           data-test="ImagesList.General.Label"
           defaultValue={options.imageLabel}
           onChange={(e: any) => onOptionsChange({ imageLabel: e.target.value })}
+          suffix={visualizationsSettings.FaIconComponent('fa-asterisk')}
         />
       </Section>
 
@@ -58,6 +62,7 @@ export default function GeneralSettings({ options, data, visualizationName, onOp
         />
       </Section>
 
+      {visualizationsSettings.FormatSpecComponent()}
     </React.Fragment>
   );
 }

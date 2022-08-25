@@ -1,18 +1,44 @@
 import PropTypes from "prop-types";
 import React from "react";
-// import { markdown } from "markdown";
 import HtmlContent from "@redash/viz/lib/components/HtmlContent";
+import anchor from "markdown-it-anchor";
+// import markdownItToc from "@/lib/markdown/markdownItToc";
+const hljs = require('highlight.js');
+const MarkdownIt = require('markdown-it'),
+md = new MarkdownIt({
+  html: true,
+  highlight: function (str, lang) {
+    if (lang && hljs.getLanguage(lang)) {
+      try {
+        return hljs.highlight(str, { language: lang }).value;
+      } catch (__) {}
+    }
 
-var MarkdownIt = require('markdown-it'),
-md = new MarkdownIt();
+    return ''; // use external default escaping
+  }
+});
 md.use(require('markdown-it-container'), 'warning');
 md.use(require('markdown-it-container'), 'info');
 md.use(require('markdown-it-container'), 'danger');
-//md.use(require('markdown-it-anchor'), {});
-const anchor = require('markdown-it-anchor');
-md.use(anchor.default, {symbol: ''});
+/* md.use(anchor, {
+  permalink: anchor.permalink.linkInsideHeader(
+    {
+      placement: 'after',
+      symbol: '<i class="fa fa-link" aria-hidden="true"></i>',
+      renderHref : (slug) => {
+        return document.location.pathname + '#' + slug;
+      },
+    }
+  )
+}); */
+md.use(anchor);
 md.use(require('markdown-it-imsize'));
 
+/* md.use(markdownItToc, {
+  transformLink: slug => {
+    return document.location.pathname + '#' + slug;
+  }
+}); */
 
 const MarkdownPage = ({ content }) => {
     return (

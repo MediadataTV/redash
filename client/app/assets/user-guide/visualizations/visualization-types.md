@@ -1,4 +1,3 @@
-
 ## Visualization Types
 
 Redash supports several different types of visualizations - A Table is the
@@ -53,3 +52,12 @@ Demonstration available [here](https://youtu.be/GHIWn6Trmas).
 ### Word Cloud
 
 ![](/static/images/docs/visualization_examples/d3-cloud.png)
+
+### Vertical Table
+
+![](/static/images/docs/visualization_examples/vertical-table.png)
+
+### Images List
+
+![](/static/images/docs/visualization_examples/images-list.png)
+

@@ -4,10 +4,6 @@ To make a new query, click `Create` in the navbar then select `Query`.
 
 # Query Editor
 
-## Query Syntax
-
-In most cases we use the query language native to the data source.
-
 ## Keyboard Shortcuts
 
 - Execute query: `Ctrl`/`Cmd` + `Enter`
@@ -45,12 +41,10 @@ By default each query starts as an unpublished draft named **New Query**. It can
 
 To publish a query, change its name or click the `Publish` button. You can toggle the published status by clicking the `Unpublish` button. Unpublishing a query will not remove it from dashboards or alerts. But it will prevent you from adding it to any others.
 
-
 ::: info
 Publishing or un-publishing a query does not affect its visibility.
 All queries in your organization are visible to all logged-in users.
 :::
-
 
 ## Archiving a Query
 

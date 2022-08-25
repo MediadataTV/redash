@@ -59,9 +59,9 @@ function NotificationTemplate({ alert, query, columnNames, resultValues, templat
         setBody(`<h3>{{ALERT_NAME}}</h3>
 
 To see full alert query: <a href="{{QUERY_URL}}">{{QUERY_URL}}</a>
-
+<br/>
 <legend>Total rows found: <strong>{{QUERY_RESULT_ROWS|length}}</strong></legend>
-
+<br/>
 {% if QUERY_RESULT_ROWS|length > 0 %}
 {{ QUERY_RESULT_ROWS | alert_table }}
 {% endif %}`);

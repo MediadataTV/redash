@@ -29,6 +29,7 @@ function Editor({ column, onChange }: Props) {
           data-test="Table.ColumnEditor.Image.UrlTemplate"
           defaultValue={column.imageUrlTemplate}
           onChange={(event: any) => onChangeDebounced({ imageUrlTemplate: event.target.value })}
+          suffix={visualizationsSettings.FaIconComponent('fa-asterisk')}
         />
       </Section>
 
@@ -53,6 +54,7 @@ function Editor({ column, onChange }: Props) {
               placeholder="Width"
               defaultValue={column.imageWidth}
               onChange={(event: any) => onChangeDebounced({ imageWidth: event.target.value })}
+              suffix={visualizationsSettings.FaIconComponent('fa-asterisk')}
             />
             <span className="image-dimension-selector-spacer">&times;</span>
             <Input
@@ -60,6 +62,7 @@ function Editor({ column, onChange }: Props) {
               placeholder="Height"
               defaultValue={column.imageHeight}
               onChange={(event: any) => onChangeDebounced({ imageHeight: event.target.value })}
+              suffix={visualizationsSettings.FaIconComponent('fa-asterisk')}
             />
           </div>
         </ControlLabel>
@@ -72,6 +75,7 @@ function Editor({ column, onChange }: Props) {
           data-test="Table.ColumnEditor.Image.TitleTemplate"
           defaultValue={column.imageTitleTemplate}
           onChange={(event: any) => onChangeDebounced({ imageTitleTemplate: event.target.value })}
+          suffix={visualizationsSettings.FaIconComponent('fa-asterisk')}
         />
       </Section>
 
@@ -82,26 +86,12 @@ function Editor({ column, onChange }: Props) {
           data-test="Table.ColumnEditor.Image.DescriptionTemplate"
           defaultValue={column.imageDescriptionTemplate}
           onChange={(event: any) => onChangeDebounced({ imageDescriptionTemplate: event.target.value })}
+          suffix={visualizationsSettings.FaIconComponent('fa-asterisk')}
         />
       </Section>
 
-      {/* @ts-expect-error ts-migrate(2745) FIXME: This JSX tag's 'children' prop expects type 'never... Remove this comment to see the full error message */}
-      <Section>
-        {/* @ts-expect-error ts-migrate(2746) FIXME: This JSX tag's 'children' prop expects a single ch... Remove this comment to see the full error message */}
-        <ContextHelp
-          placement="topLeft"
-          arrowPointAtCenter
-          // @ts-expect-error ts-migrate(2322) FIXME: Type 'Element' is not assignable to type 'null | u... Remove this comment to see the full error message
-          icon={<span style={{ cursor: "default" }}>Format specs {ContextHelp.defaultIcon}</span>}>
-          <div>
-            All columns can be referenced using <code>{"{{ column_name }}"}</code> syntax.
-          </div>
-          <div>
-            Use <code>{"{{ @ }}"}</code> to reference current (this) column.
-          </div>
-          <div>This syntax is applicable to URL, Title and Size options.</div>
-        </ContextHelp>
-      </Section>
+      {visualizationsSettings.FormatSpecComponent()}
+
     </React.Fragment>
   );
 }
@@ -150,10 +140,10 @@ export function initImageColumn(column: any) {
   function ImageColumn({ row }: any) {
     // @ts-expect-error ts-migrate(2339) FIXME: Property 'text' does not exist on type '{}'.
     // eslint-disable-line react/prop-types
-    const { text, description, ...props } = prepareData(column, row);
+    const { text, description, src, ...props } = prepareData(column, row);
     return (
       <>
-        <img alt="" {...props} />
+        <img alt="" src={visualizationsSettings.ProxyFilter(src)} {...props} />
         { description && description!=='' ? (<span className="image-description-down">{description}</span>) : '' }
       </>
     );
@@ -187,17 +177,17 @@ export function initImageArrayColumn(column: any) {
     if(isArray(prepared) && prepared.length>1){
         return (
         <ul className="array-element">
-          {map(prepared, ({text, description, ...props}: any, index: any) => 
-            (<li key={index}><img alt="" {...props} />
+          {map(prepared, ({text, description, src, ...props}: any, index: any) =>
+            (<li key={index}><img src={visualizationsSettings.ProxyFilter(src)} alt="" {...props} />
             { description && description!=='' ? (<span className="image-description-right">{description}</span>) : '' }
             </li>)
           )}
         </ul>);
     }else{
-      const { text, description, ...props } = (isArray(prepared) ? prepared[0] : prepared);
+      const { text, description, src, ...props } = (isArray(prepared) ? prepared[0] : prepared);
       return (
         <>
-        <img alt="" {...props} />
+        <img alt="" src={visualizationsSettings.ProxyFilter(src)} {...props} />
         { description && description!=='' ? (<span className="image-description-down">{description}</span>) : '' }
         </>
       );
@@ -213,4 +203,4 @@ initImageColumn.Editor = Editor;
 
 initImageArrayColumn.friendlyName = "Images List";
 initImageArrayColumn.Editor = Editor;
- 
+

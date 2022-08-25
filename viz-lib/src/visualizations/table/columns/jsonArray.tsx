@@ -55,7 +55,7 @@ export default function initJsonArrayColumn(column: any) {
   }
 
   function JsonArrayColumn({ row }: any) {
-    
+
 
     // eslint-disable-line react/prop-types
     const { text, value } = prepareData(row);
@@ -66,13 +66,13 @@ export default function initJsonArrayColumn(column: any) {
     return (
       <div className="json-cell-valid">
 
-        {value ? 
+        {value ?
           (value.length>1) ?
           <ul className="array-element">
             {value.map((val:any, k:any) => (<li key={k}>{processText(val)}</li>))}
           </ul>
           :
-          value.map((val:any, k:any) => (<span key={k}>{processText(val)}</span>)) 
+          value.map((val:any, k:any) => (<span key={k}>{processText(val)}</span>))
         : text}
       </div>
     );
@@ -95,6 +95,7 @@ function Editor({ column, onChange }: Props) {
           data-test="Table.ColumnEditor.JsonArray.FieldPath"
           defaultValue={column.jsonArrayFieldPath}
           onChange={(event: any) => onChangeDebounced({ jsonArrayFieldPath: event.target.value })}
+          suffix={visualizationsSettings.FaIconComponent('fa-asterisk')}
         />
       </Section>
 
@@ -112,6 +113,7 @@ function Editor({ column, onChange }: Props) {
         </Switch>
       </Section>
 
+      {visualizationsSettings.FormatSpecComponent()}
     </React.Fragment>
   );
 }

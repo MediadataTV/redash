@@ -3,6 +3,7 @@ import React from "react";
 import { useDebouncedCallback } from "use-debounce";
 import { Section, Input, Checkbox, ContextHelp } from "@/components/visualizations/editor";
 import { formatSimpleTemplate } from "@/lib/value-format";
+import { visualizationsSettings } from "@/visualizations/visualizationsSettings";
 
 type Props = {
   column: {
@@ -27,6 +28,7 @@ function Editor({ column, onChange }: Props) {
           label="Only render link when all params are provided"
           defaultValue={column.linkMandatoryParams}
           onChange={(event: any) => onChangeDebounced({ linkMandatoryParams: event.target.value })}
+          suffix={visualizationsSettings.FaIconComponent('fa-asterisk')}
         />
       </Section>
       {/* @ts-expect-error ts-migrate(2745) FIXME: This JSX tag's 'children' prop expects type 'never... Remove this comment to see the full error message */}
@@ -36,6 +38,7 @@ function Editor({ column, onChange }: Props) {
           data-test="Table.ColumnEditor.Link.UrlTemplate"
           defaultValue={column.linkUrlTemplate}
           onChange={(event: any) => onChangeDebounced({ linkUrlTemplate: event.target.value })}
+          suffix={visualizationsSettings.FaIconComponent('fa-asterisk')}
         />
       </Section>
 
@@ -46,16 +49,18 @@ function Editor({ column, onChange }: Props) {
           data-test="Table.ColumnEditor.Link.TextTemplate"
           defaultValue={column.linkTextTemplate}
           onChange={(event: any) => onChangeDebounced({ linkTextTemplate: event.target.value })}
+          suffix={visualizationsSettings.FaIconComponent('fa-asterisk')}
         />
       </Section>
 
       {/* @ts-expect-error ts-migrate(2745) FIXME: This JSX tag's 'children' prop expects type 'never... Remove this comment to see the full error message */}
       <Section>
         <Input
-          label="Title template"
+          label='Title template'
           data-test="Table.ColumnEditor.Link.TitleTemplate"
           defaultValue={column.linkTitleTemplate}
           onChange={(event: any) => onChangeDebounced({ linkTitleTemplate: event.target.value })}
+          suffix={visualizationsSettings.FaIconComponent('fa-asterisk')}
         />
       </Section>
 
@@ -69,23 +74,7 @@ function Editor({ column, onChange }: Props) {
         </Checkbox>
       </Section>
 
-      {/* @ts-expect-error ts-migrate(2745) FIXME: This JSX tag's 'children' prop expects type 'never... Remove this comment to see the full error message */}
-      <Section>
-        {/* @ts-expect-error ts-migrate(2746) FIXME: This JSX tag's 'children' prop expects a single ch... Remove this comment to see the full error message */}
-        <ContextHelp
-          placement="topLeft"
-          arrowPointAtCenter
-          // @ts-expect-error ts-migrate(2322) FIXME: Type 'Element' is not assignable to type 'null | u... Remove this comment to see the full error message
-          icon={<span style={{ cursor: "default" }}>Format specs {ContextHelp.defaultIcon}</span>}>
-          <div>
-            All columns can be referenced using <code>{"{{ column_name }}"}</code> syntax.
-          </div>
-          <div>
-            Use <code>{"{{ @ }}"}</code> to reference current (this) column.
-          </div>
-          <div>This syntax is applicable to URL, Text and Title options.</div>
-        </ContextHelp>
-      </Section>
+      {visualizationsSettings.FormatSpecComponent()}
     </React.Fragment>
   );
 }
@@ -105,7 +94,7 @@ export default function initLinkColumn(column: any) {
         } else {
           return null;
         }
-      });    
+      });
 
       mandatoryParams.forEach( (item: string) => {
         let paramValue = formatSimpleTemplate(item.trim(), row);
@@ -115,7 +104,7 @@ export default function initLinkColumn(column: any) {
       });
     }
 
-    
+
 
     const href = trim(formatSimpleTemplate(column.linkUrlTemplate, row));
     if (href === "") {

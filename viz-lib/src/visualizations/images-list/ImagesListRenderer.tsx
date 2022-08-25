@@ -9,7 +9,7 @@ import "antd/lib/image/style/index.less";
 import "./images-list.less";
 
 function getImages(data: any, options: any) {
-  
+
   if (isString(data) && data.length <= visualizationsSettings.tableCellMaxJSONSize) {
     try {
       let jsonValue = JSON.parse(data);
@@ -22,7 +22,7 @@ function getImages(data: any, options: any) {
           if(!isObject(item)){
             return item;
           }else{
-            return { 
+            return {
               src: formatSimpleTemplate(options.imageSrc, item),
               alt: formatSimpleTemplate(options.imageLabel, item),
               width: options.imageThumbnailWidth,
@@ -31,7 +31,7 @@ function getImages(data: any, options: any) {
         });
       }else{
         value = [
-          { 
+          {
             src: formatSimpleTemplate(options.imageSrc, jsonValue),
             alt: formatSimpleTemplate(options.imageLabel, jsonValue),
             width: options.imageThumbnailWidth,
@@ -62,9 +62,9 @@ export default function ImagesListRenderer({ data, options }: any) {
       {isArray(images) ?
         <Image.PreviewGroup>
           { images.map((entry:any, k:any) => (
-            <Image key={k} width={entry.width} src={entry.src} alt={entry.alt} />
+            <Image key={k} width={entry.width} src={visualizationsSettings.ProxyFilter(entry.src)} alt={entry.alt} />
             ))}
-        </Image.PreviewGroup>      
+        </Image.PreviewGroup>
         : data
       }
     </div>
