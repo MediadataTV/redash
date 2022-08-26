@@ -2,7 +2,7 @@
 
 Visit any query page and click the vertical ellipsis (`⋮`) button beneath the results pane. Then choose to download a CSV, TSV, or Excel file. This action downloads the current query result.
 
-![](/static/images/docs/gitbook/download-dataset.png)
+![](static/images/docs/md-custom/export-results-1.png)
 
 # How to get latest results via the API
 
@@ -14,8 +14,7 @@ It's not shown in the interface, but you can also get the Excel format by changi
 
 :::
 
-![](/static/images/docs/gitbook/show-api-key.png)
-
+![](static/images/docs/md-custom/export-results-2.png)
 :::warning
 
 The latest results API is not supported for queries that use parameters.

@@ -1,6 +1,6 @@
 To make a new query, click `Create` in the navbar then select `Query`.
 
-![](static/images/docs/gifs/queries/add_new_query.gif)
+![](static/images/docs/md-custom/writing-queries-1.gif)
 
 # Query Editor
 
@@ -15,7 +15,7 @@ To make a new query, click `Create` in the navbar then select `Query`.
 
 To the left of the query editor, you will find the Schema Browser:
 
-![](static/images/docs/gitbook/schema-browser.png =400x)
+![](static/images/docs/md-custom/writing-queries-2.png =400x)
 
 The schema browser will list all your tables, and when clicking on a table will show its columns. To insert an item into your query, simply click the double arrow on the right side. You can filter the schema with the search box and refresh it by clicking on the refresh button (otherwise it refreshes periodically in the background).
 ::: info
@@ -50,23 +50,33 @@ All queries in your organization are visible to all logged-in users.
 
 You can't delete queries in Redash. But you can archive them. Archiving is like deleting, except **direct links to the query still work.** To archive a query, open the vertical ellipsis menu at the top-right of the query editor and click Archive.
 
-![](static/images/docs/gitbook/archive_query.png)
+![](static/images/docs/md-custom/writing-queries-3.gif)
 
 ## Duplicating (Forking) a Query
 
 If you need to create a copy of an existing query (created by you or someone else), you can fork it. To fork a query, just click on the Fork button (see example below)
 
-![](static/images/docs/gifs/queries/fork_query.gif)
+![](static/images/docs/md-custom/writing-queries-4.gif)
 
-## Managing Query Permissions
+[//]: # (## Managing Query Permissions)
 
-By default, saved queries can only be modified by the user who created them and members of the Admin group. But Redash includes experimental support to share edit permissions with non-Admin users. An Admin in your organization needs to enable it first. Open your organization settings and check the "Enable experimental multiple owners support"
+[//]: # ()
 
-![](static/images/docs/gitbook/experimental-owners-support.png)
+[//]: # (By default, saved queries can only be modified by the user who created them and members of the Admin group. But Redash includes experimental support to share edit permissions with non-Admin users. An Admin in your organization needs to enable it first. Open your organization settings and check the "Enable experimental multiple owners support")
 
-Now the Query Editor options menu includes a `Manage Permissions` option. Clicking on it it will open a dialog where you can add other users as editors to your query or dashboard.
+[//]: # ()
 
-![](static/images/docs/gitbook/experimental-permissions-button.png)
+[//]: # (![]&#40;static/images/docs/gitbook/experimental-owners-support.png&#41;)
 
-Please note that currently the users you add won't receive a notification, so you will need to notify them manually.
+[//]: # ()
+
+[//]: # (Now the Query Editor options menu includes a `Manage Permissions` option. Clicking on it it will open a dialog where you can add other users as editors to your query or dashboard.)
+
+[//]: # ()
+
+[//]: # (![]&#40;static/images/docs/gitbook/experimental-permissions-button.png&#41;)
+
+[//]: # ()
+
+[//]: # (Please note that currently the users you add won't receive a notification, so you will need to notify them manually.)
 

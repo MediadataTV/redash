@@ -150,7 +150,7 @@ export default function DesktopNavbar() {
 
       <NavbarSection>
         <Menu.Item key="userguide" className={activeState.userguide ? "navbar-active-item" : null}>
-          <Link href="user-guide">
+          <Link href="user-guide/quickstart">
             <QuestionCircleOutlinedIcon />
             <span className="desktop-navbar-label">User guide</span>
           </Link>

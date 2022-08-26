@@ -12,6 +12,12 @@ import "./UserGuide.less";
 import MarkdownPage from "./components/MarkdownPage";
 
 const sidebarMenu = [
+   {
+      key: "userguide.quickstart",
+      href: "/user-guide/quickstart",
+      source: 'main/quickstart.md',
+      title: "Quickstart",
+  },
   {
     key: 'userguide.querying',
     href: '#',
@@ -121,7 +127,7 @@ const sidebarMenu = [
                 key: "userguide.querying.syntax.dataretrieval.limit",
                 href: "/user-guide/querying/query-syntax/data-retrieval/limit",
                 source: 'querying/query-syntax/data-retrieval/limit.md',
-                title: "LIKE",
+                title: "LIMIT",
               },
               {
                 key: "userguide.querying.syntax.dataretrieval.order-by",
@@ -193,7 +199,7 @@ const sidebarMenu = [
           }
         ]
       },
-/*       {
+      /* {
         key: "userguide.querying.results",
         href: "/user-guide/querying/query-results-data-source",
         source: 'querying/query-results-data-source.md',
@@ -411,7 +417,7 @@ routes.register(
   "userguide",
   routeWithUserSession({
     path: "/user-guide",
-    title: "User guide",
+    title: "User guide ToC",
     render: pageProps => <UserGuide selected="userguide" title="User guide" renderToc={true} />,
   })
 );

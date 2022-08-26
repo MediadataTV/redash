@@ -1,9 +1,8 @@
-
 Copy and Paste are a big part of composing database queries. Because it's much easier to duplicate prior work than to write it from scratch. This is particularly true for common `JOIN` statements or complex `CASE` expressions. As your list of queries in Redash grows, however, it can be difficult to remember which queries contain the statement you need right now. Enter Query Snippets.
 
 Query Snippets are segments of queries that your whole team can share and trigger via auto complete. You create them at `Settings` -> `Query Snippets`.
 
-![](/static/images/docs/gitbook/Snippet.png)
+![](static/images/docs/md-custom/query-snippet.png)
 
 Here's an example for a simple snippet:
 
@@ -34,6 +33,7 @@ An insertion point of zero `${0}` is always the *last* point in the tab order.
 :::
 
 ## Insert A Query Snippet
+
 If you have Live Auto Complete enabled, you can invoke your snippet from the Query Editor by typing the trigger word you defined in the Query Snippet editor. Auto Complete will suggest it like any other keyword in your database.
 
 :::warning
@@ -42,5 +42,5 @@ If Live Auto Complete is disabled, you can still invoke Query Snippets by pressi
 
 Here are some other ideas for snippets:
 
-  * Frequent `JOIN` statements
-  * Complicated clauses like `WITH` or `CASE`.
+* Frequent `JOIN` statements
+* Complicated clauses like `WITH` or `CASE`.

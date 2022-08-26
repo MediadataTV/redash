@@ -1,6 +1,6 @@
 With parameters you can substitute values into your query at runtime without having to **Edit Source**. Any string between double curly braces `{{ }}` will be treated like a parameter. A widget will appear above the results pane so you change the parameter value.
 
-![](/static/images/docs/gitbook/parameter-example.png)
+![](static/images/docs/md-custom/query-parameters-1.png)
 
 In editing mode, you can click the gear icon for each parameter widget to adjust its settings. The gear icons disappear when you click **Show Data Only** so that users who don't own the query can't change the parameter behavior.
 
