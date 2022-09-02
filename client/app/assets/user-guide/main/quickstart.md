@@ -10,7 +10,7 @@ After you create you query you can add one or more [visualization](/user-guide/v
 
 Those visualization can be embedded into any [dashboard](/user-guide/dashboards/dashboard-editing) by selecting the corresponding query and then the desired visualization.
 
-## How is the data strucutured?
+## How is the data structured?
 
 Every table you can see in the table list, when creating a query, is a direct translation of the JSON schema that represents the entity.
 
