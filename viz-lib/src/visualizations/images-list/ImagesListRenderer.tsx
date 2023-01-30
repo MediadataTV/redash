@@ -25,6 +25,7 @@ function getImages(data: any, options: any) {
             return {
               src: formatSimpleTemplate(options.imageSrc, item),
               alt: formatSimpleTemplate(options.imageLabel, item),
+              class: formatSimpleTemplate(options.imageStyleClass, item),
               width: options.imageThumbnailWidth,
             };
           }
@@ -34,6 +35,7 @@ function getImages(data: any, options: any) {
           {
             src: formatSimpleTemplate(options.imageSrc, jsonValue),
             alt: formatSimpleTemplate(options.imageLabel, jsonValue),
+            class: formatSimpleTemplate(options.imageStyleClass, jsonValue),
             width: options.imageThumbnailWidth,
           }
         ];
@@ -62,7 +64,9 @@ export default function ImagesListRenderer({ data, options }: any) {
       {isArray(images) ?
         <Image.PreviewGroup>
           { images.map((entry:any, k:any) => (
+            <span className={entry.class}>
             <Image key={k} width={entry.width} src={visualizationsSettings.ProxyFilter(entry.src)} alt={entry.alt} />
+            </span>
             ))}
         </Image.PreviewGroup>
         : data

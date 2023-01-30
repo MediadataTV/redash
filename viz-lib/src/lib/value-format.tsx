@@ -96,7 +96,7 @@ function jsonFind(json: any, jsonPath: string, jsonMatchValue: any){
     let jsonValue = parseToJson(json);
     if(lodash.isUndefined(jsonValue)){
       return json;
-    }    
+    }
     return lodash.find(jsonValue, lodash.matchesProperty(jsonPath, jsonMatchValue));
   } catch (e) {
     // ignore `JSON.parse` error and return default value
@@ -104,14 +104,15 @@ function jsonFind(json: any, jsonPath: string, jsonMatchValue: any){
   return json;
 }
 
-function jsonSelect(json: any, jsonPath: string, selectFromArray: boolean = false){
+function jsonSelect(json: any, jsonPath: string, selectFromArray: string = "false"){
+
   try {
     let jsonValue = parseToJson(json);
     if(lodash.isUndefined(jsonValue)){
       return json;
-    }    
+    }
     let output;
-    if(selectFromArray && lodash.isArray(jsonValue)){
+    if(selectFromArray==="true" && lodash.isArray(jsonValue)){
       output = jsonValue.map(item => lodash.get(item, jsonPath));
     }
     else{
@@ -124,9 +125,14 @@ function jsonSelect(json: any, jsonPath: string, selectFromArray: boolean = fals
   return json;
 }
 
+function arrayJoin(data: any, joinString: string = ' '){
+    return lodash.join(data, joinString)
+}
+
 const customFilters: { [K: string]: Function } = {
   camelCase: lodash.camelCase,
   snakeCase: lodash.snakeCase,
+  arrayJoin,
   jsonSelect,
   jsonFind,
 };

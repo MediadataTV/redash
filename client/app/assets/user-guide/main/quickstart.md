@@ -29,7 +29,8 @@ Depending on the type of the struct you can render the data in different ways, l
 
 ```sql
 select id, type, name
-    from movie
+    from content
+WHERE type = 'Movie'
 LIMIT 5
 ```
 
@@ -47,7 +48,8 @@ To get an array of the titles for the movies you can use the following query:
 
 ```sql
 select id, type, name.value
-    from movie
+    from content
+WHERE type = 'Movie'
 LIMIT 5
 ```
 
@@ -65,7 +67,8 @@ Then if you want to select only the first ocurrence of an array:
 
 ```sql
 select id, type, name[0].value
-    from movie
+    from content
+WHERE type = 'Movie'
 LIMIT 5
 ```
 

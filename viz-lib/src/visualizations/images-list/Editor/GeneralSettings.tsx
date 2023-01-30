@@ -54,6 +54,18 @@ export default function GeneralSettings({ options, data, visualizationName, onOp
       <Section>
         <Input
           layout="horizontal"
+          label="Images Style class Field"
+          data-test="ImagesList.General.StyleClass"
+          defaultValue={options.imageStyleClass}
+          onChange={(e: any) => onOptionsChange({ imageStyleClass: e.target.value })}
+          suffix={visualizationsSettings.FaIconComponent('fa-asterisk')}
+        />
+      </Section>
+
+      {/* @ts-expect-error ts-migrate(2745) FIXME: This JSX tag's 'children' prop expects type 'never... Remove this comment to see the full error message */}
+      <Section>
+        <Input
+          layout="horizontal"
           label="Images Thumbnail Width"
           data-test="ImagesList.General.Width"
           defaultValue={options.imageThumbnailWidth}

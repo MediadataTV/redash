@@ -5,6 +5,7 @@ const DEFAULT_OPTIONS = {
   imageColumn: "",
   imageLabel: "",
   imageSrc: "",
+  imageStyleClass: "",
   imageThumbnailWidth: 200,
 };
 
